@@ -1,0 +1,19 @@
+{
+    "name": "iasc-tp-2020-1c-subastas-automaticas",
+    "version": "1.0.0",
+    "description": "",
+    "main": "dist/index.js",
+    "scripts": {
+        "build": "tsc",
+        "prestart": "npm run build",
+        "start": "node .",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@types/express": "^4.17.6",
+        "express": "^4.17.1",
+        "typescript": "^3.9.3"
+    }
+}
