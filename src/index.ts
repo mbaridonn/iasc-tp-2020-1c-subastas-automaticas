@@ -1,12 +1,11 @@
 import express from "express";
+import * as router from "./router";
 
 // Create a new express app instance
 const app: express.Application = express();
-const port = 3000;
+const port: number = 3000;
 
-app.get('/', function (req, res) {
-    res.send('Hello World!');
-});
+router.register(app);
 
 app.listen(port, function () {
     console.log(`Server started at http://localhost:${port}`);
