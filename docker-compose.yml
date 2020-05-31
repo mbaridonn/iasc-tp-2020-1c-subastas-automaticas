@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+    node-app:
+        build: .
+        container_name: 'subastas'
+        restart: always
+        ports: 
+          - "3000:3000"
