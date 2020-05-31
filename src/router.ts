@@ -16,7 +16,9 @@ export const register = (app: express.Application) => {
     });
 
     app.post('/buyers', function (req, res) {
-
+        var newBuyer = req.body
+        buyers.push(newBuyer);
+        res.json(newBuyer);
     });
 
     app.get('/bids', function (req, res) {
@@ -24,7 +26,9 @@ export const register = (app: express.Application) => {
     });
 
     app.post('/bids', function (req, res) {
-
+        var newBid = req.body
+        bids.push(newBid);
+        res.json(newBid);
     });
 
 }
