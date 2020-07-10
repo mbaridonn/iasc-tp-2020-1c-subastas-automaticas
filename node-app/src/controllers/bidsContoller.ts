@@ -1,16 +1,29 @@
 import { Bid } from '../models/bids';
+import { createJsonResponse } from '../utils/response'
 
-let bidsList: Bid[] = [
-    {
-        basePrice: 100,
-        hours: 3,
-        tags: ['tech', 'movies']
-    }
-];
+let bidsList: Bid[] = [];
 
 export const addNewBid = (basePrice:number, hours:number, tags: String[]) => {
     let bid = new Bid(basePrice, hours, tags);
     bidsList.push(bid);
+    createJsonResponse(bid, 200)
 }
+
+
+export const updateBid = (id:number, basePrice?:number, hours?:number, tags?:String[]) => {
+    let bid: Bid = bidsList.find( (b:Bid) => {
+        return b._id == id
+    });
+
+    bid._basePrice = (basePrice != null || basePrice != undefined) ? basePrice : bid._basePrice;
+    bid._hours = (hours != null || hours != undefined) ? hours : bid._hours;
+    bid._tags = (tags != null || tags != undefined) ? tags : bid._tags;
+
+    let index = bidsList.indexOf(bid);
+    bidsList[index] = bid;
+
+    createJsonResponse(bid, 200)
+}
+
 
 export const getCurrentBids = () => {return bidsList};

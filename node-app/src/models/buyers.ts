@@ -1,14 +1,37 @@
 
 export class Buyer {
-    name: String;
-    ip: String; 
-    tags: String[]
+    _name: String;
+    _ip: String; 
+    _tags: String[]
     constructor(name: String, ip:String, tags:String[]){
-        this.ip = ip;
-        this.tags = tags;
-        this.name = name;
+        this._ip = ip;
+        this._tags = tags;
+        this._name = name;
     }
 
+    get name(){
+        return this._name;
+    }
+
+    set name(name){
+        this._name = name;
+    }
+
+    get ip(){
+        return this._ip;
+    }
+
+    set ip(ip){
+        this._ip = ip;
+    }
+
+    get tags(){
+        return this._tags;
+    }
+
+    set tags(tags){
+        this._tags = tags;
+    }
     
 }
 
