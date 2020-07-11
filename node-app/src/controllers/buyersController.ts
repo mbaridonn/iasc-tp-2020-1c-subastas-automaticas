@@ -1,12 +1,14 @@
 import { Buyer } from '../models/buyers';
-import { createJsonResponse } from '../utils/response'
+import { createJsonResponse } from '../utils/response';
+const Notifier = require('../utils/notifier');
 
 let buyersList: Buyer[] = [];
 
 export const addNewBuyer = ( name:String, ip:String, tags:String[]) => {
     let buyer = new Buyer( name, ip, tags )
     buyersList.push(buyer);
-    createJsonResponse(buyer, 200)
+    //Notifier.notify()
+    return createJsonResponse(buyer, 200);
 }
 
 export const updateBuyer = (ip:String, name?:String, tags?:String[]) => {
@@ -23,5 +25,6 @@ export const updateBuyer = (ip:String, name?:String, tags?:String[]) => {
 
     createJsonResponse(buyer, 200)
 }
+
 
 export const getCurrentBuyers = () => { return buyersList};

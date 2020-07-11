@@ -25,14 +25,14 @@ export const register = (app: express.Application) => {
 
     app.post('/bids/new', function (req, res) {
         let {basePrice, hours, tags} = req.body;
-        let newBid = controllers.addNewBid(basePrice, hours, tags);
-        res.json(newBid);
+        let response = controllers.addNewBid(basePrice, hours, tags);
+        res.send(response);
     });
 
     app.post('/bids/update', function (req, res) {
         let {basePrice, hours, tags} = req.body;
-        let newBid = controllers.updateBid(basePrice, hours, tags);
-        res.json(newBid);
+        let response = controllers.updateBid(basePrice, hours, tags);
+        res.send(response);
     });
 
     ////////////////////////////////////////////
@@ -44,14 +44,14 @@ export const register = (app: express.Application) => {
 
     app.post('/buyers/new', function (req, res) {
         let {name, ip, tags} = req.body;
-        let newBuyer = controllers.addNewBuyer(name, ip, tags);
-        res.json(newBuyer);
+        let response = controllers.addNewBuyer(name, ip, tags);
+        res.send(response);
     });
 
     app.post('/buyers/update', function (req, res) {
         let {name, ip, tags} = req.body;
-        let newBuyer = controllers.updateBuyer(ip, name, tags);
-        res.json(newBuyer);
+        let response = controllers.updateBuyer(ip, name, tags);
+        res.send(response);
     });
 
 }
