@@ -3,15 +3,24 @@ import { createJsonResponse } from '../utils/response'
 
 let bidsList: Bid[] = [];
 
-export const addNewBid = (basePrice:number, hours:number, tags: String[]) => {
-    let bid = new Bid(basePrice, hours, tags);
+export const addNewBid = (basePrice: number, hours: number, tags: String[]) => {
+    let id = 1;
+
+    if (bidsList.length > 0) {
+        var lastExistingId = bidsList.slice(-1)[0].id;
+        id = lastExistingId + 1;
+    }
+
+    let bid = new Bid(id, basePrice, hours, tags);
+
     bidsList.push(bid);
+
     createJsonResponse(bid, 200)
 }
 
 
-export const updateBid = (id:number, basePrice?:number, hours?:number, tags?:String[]) => {
-    let bid: Bid = bidsList.find( (b:Bid) => {
+export const updateBid = (id: number, basePrice?: number, hours?: number, tags?: String[]) => {
+    let bid: Bid = bidsList.find((b: Bid) => {
         return b._id == id
     });
 
@@ -26,4 +35,4 @@ export const updateBid = (id:number, basePrice?:number, hours?:number, tags?:Str
 }
 
 
-export const getCurrentBids = () => {return bidsList};
+export const getCurrentBids = () => { return bidsList };

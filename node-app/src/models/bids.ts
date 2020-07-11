@@ -3,13 +3,13 @@ export class Bid {
     _basePrice: number;
     _hours: number;
     _tags: String[];
-    _id: number; //Todo ver como hacerlo unico!
+    _id: number;
     
-    constructor(basePrice: number, hours: number, tags:String[]){
+    constructor(id: number, basePrice: number, hours: number, tags:String[]){
+        this._id = id;
         this._basePrice = basePrice;
         this._hours = hours;
         this._tags = tags;
-        this._id = 1; //Todo ver como hacerlo unico!
     }
 
     get basePrice(){
