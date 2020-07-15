@@ -5,10 +5,10 @@ export const register = (app: express.Application) => {
 
     //////// Datos de prueba ///////
     
-    controllers.addNewBuyer('Juan', '190.19.4.92', ['tech', 'movies']);
-    controllers.addNewBuyer('Carlos', '190.19.4.14', ['tech', 'movies']);
+    controllers.addNewBuyer('Juan', '190.19.4.92', ['tech', 'movies'], false);
+    controllers.addNewBuyer('Carlos', '190.19.4.14', ['tech', 'movies'], false);
 
-    controllers.addNewBid(100, 3, ['tech', 'movies']);
+    controllers.addNewBid(100, 3, ['tech', 'movies'], false);
 
 /*** Routes ***/
 
@@ -30,8 +30,8 @@ export const register = (app: express.Application) => {
     });
 
     app.post('/bids/update', function (req, res) {
-        let {basePrice, hours, tags} = req.body;
-        let response = controllers.updateBid(basePrice, hours, tags);
+        let {_id, _basePrice, _hours, _tags} = req.body;
+        let response = controllers.updateBid(_id, _basePrice, _hours, _tags);
         res.send(response);
     });
 
@@ -49,8 +49,8 @@ export const register = (app: express.Application) => {
     });
 
     app.post('/buyers/update', function (req, res) {
-        let {name, ip, tags} = req.body;
-        let response = controllers.updateBuyer(ip, name, tags);
+        let {_name, _ip, _tags} = req.body;
+        let response = controllers.updateBuyer(_ip, _name, _tags);
         res.send(response);
     });
 
