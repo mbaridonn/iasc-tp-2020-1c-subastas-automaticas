@@ -27,6 +27,13 @@ app.listen(port, function () {
     console.log(`Server started at http://localhost:${port}`);
 });
 
+const pingNodes = function() {
+    let nodes = mainNodes.concat(otherNodes)
+    nodes.forEach(node => function(){
+        axios.get(`https://localhost:${node}/ping`).catch(err => replaceNode(node))
+    })
+}
+
 const initScheduler = function(){
     const minutes = 3
     const interval = minutes * 60 * 1000
@@ -44,11 +51,4 @@ const initNodes = function () {
 const addNode = function (list: Array<number>) {
     amountOfNodes++
     list.push(port + amountOfNodes)
-}
-
-const pingNodes = function() {
-    let nodes = mainNodes.concat(otherNodes)
-    nodes.forEach(node => function(){
-        axios.get(`https://localhost:${node}/ping`).catch(err => replaceNode(node))
-    })
 }
