@@ -12,6 +12,8 @@ services:
         - ./subastas-api:/app
       ports:
         - "8080:3000"
+      networks: 
+        - app-node-net
     subastas-app-1:
       build: 
         dockerfile: Dockerfile

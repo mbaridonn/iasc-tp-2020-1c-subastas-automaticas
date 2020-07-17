@@ -6,10 +6,10 @@ import axios from 'axios'
 // Create a new express app instance
 const app: express.Application = express();
 const port: number = 3000;
-let mainNodes: Array<number>
-let otherNodes: Array<number>
+let mainNodes: String[] = ['subastas-node-app:3000', 'subastas-node-app-2:3000', 'subastas-node-app-3:3000']; 
+let otherNodes: String[];
 
-let amountOfNodes = 0
+// let amountOfNodes = 0
 
 app.use(bodyParser.json());
 
@@ -42,13 +42,13 @@ const initScheduler = function(){
 
 initScheduler()
 
-const initNodes = function () {
-    addNode(mainNodes)
-    addNode(otherNodes)
-    addNode(otherNodes)
-}
+// const initNodes = function () {
+//     addNode(mainNodes)
+//     addNode(otherNodes)
+//     addNode(otherNodes)
+// }
 
-const addNode = function (list: Array<number>) {
-    amountOfNodes++
-    list.push(port + amountOfNodes)
-}
+// const addNode = function (list: String[]) {
+//     amountOfNodes++
+//     list.push(port + amountOfNodes)
+// }
