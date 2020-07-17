@@ -1,14 +1,15 @@
 import { Buyer } from '../models/buyers';
 import { createJsonResponse } from '../utils/response';
-const Notifier = require('../utils/notifier');
+import { BuyerNotifier } from '../utils/notifier';
 
 let buyersList: Buyer[] = [];
+let notifier = new BuyerNotifier();
 
 export const addNewBuyer = ( name:String, ip:String, tags:String[], notify:boolean = true ) => {
     let buyer = new Buyer( name, ip, tags )
     buyersList.push(buyer);
     if(notify){
-        Notifier.notify('buyers/update', buyer); //TODO: Parametrizar el path
+        notifier.notifyToContainers(buyer);
     }
     return createJsonResponse(buyer, 200);
 }
@@ -32,6 +33,5 @@ export const updateBuyer = (ip:String, name?:String, tags?:String[]) => {
     }
 
 }
-
 
 export const getCurrentBuyers = () => { return buyersList};

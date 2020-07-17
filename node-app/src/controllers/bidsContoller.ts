@@ -1,8 +1,9 @@
 import { Bid } from '../models/bids';
 import { createJsonResponse } from '../utils/response';
-const Notifier = require('../utils/notifier');
+import { BidNotifier } from '../utils/notifier';
 
 let bidsList: Bid[] = [];
+let notifier = new BidNotifier();
 
 export const addNewBid = (basePrice: number, hours: number, tags: String[], notify: boolean = true) => {
     let id = 1;
@@ -15,7 +16,7 @@ export const addNewBid = (basePrice: number, hours: number, tags: String[], noti
     bidsList.push(bid);
 
     if(notify){
-        Notifier.notify('bids/update', bid); //TODO: Parametrizar el path
+        notifier.notifyToContainers(bid); 
     }
 
     return createJsonResponse(bid, 200);

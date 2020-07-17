@@ -1,24 +1,32 @@
 import { createJsonResponse } from '../utils/response'
 const axios = require('axios');
 
-class Notifier {
+export class Notifier {
 
-    _destinations: String[];
+    _otherContainers: String[];
 
     constructor() {
         //TODO: Como se quien soy? Evitar autollamarme
         //TODO: Llevar a un archivo de config?
-        this._destinations = ['subastas-node-app:3000', 'subastas-node-app-2:3000', 'subastas-node-app-3:3000']; 
+        this._otherContainers = ['subastas-node-app:3000', 'subastas-node-app-2:3000', 'subastas-node-app-3:3000']; 
     }
 
-    async notify(path: String, params: any){
+    notifyToContainers(path: String, params: any){
+        return this.notifyTo(this._otherContainers, path, params);
+    }
+
+    notifyToClients(){
+
+    }
+
+    async notifyTo(destinations: String[], path: String, params: any){
         //TODO: Revisar alta disponibilidad de containers.
-        let response = await Promise.all(this.destinations.map(destination => {
+        let response = await Promise.all(destinations.map(destination => {
             return this.sentNotification(`http://${destination}/${path}`, params);
         }))
         .then(respone => { return createJsonResponse('Notification success!', 200)})
-        .catch(error => { return createJsonResponse('Fallo al notificar:' + error.message, 400)})
-        
+        .catch(error => { return createJsonResponse('Fallo al notificar:' + error.message, 400)});
+
         return response;
     }
 
@@ -33,18 +41,33 @@ class Notifier {
     }
 
 
-    set destinations(destinations:String[]){
-        this._destinations = destinations;
+    set otherContainers(otherContainers:String[]){
+        this._otherContainers = otherContainers;
     }
-    get destinations(){
-        return this._destinations;
+    get otherContainers(){
+        return this._otherContainers;
     }
 }
 
+export class BidNotifier extends Notifier {
+    constructor(){
+        super();
+    }
 
-interface INotifier {
-    notify(): Boolean;
+    notifyToContainers = (params: any) => {
+        return super.notifyTo(this._otherContainers, 'bids/update', params);
+    }
+    
 }
 
+export class BuyerNotifier extends Notifier {
+    constructor(){
+        super();
+    }
 
-module.exports = new Notifier();
+    notifyToContainers(params: any){
+        return super.notifyTo(this._otherContainers, 'buyers/update', params);
+    }
+
+}
+
