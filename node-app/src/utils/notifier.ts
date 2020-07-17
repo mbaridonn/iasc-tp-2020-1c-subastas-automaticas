@@ -1,4 +1,7 @@
 import { createJsonResponse } from '../utils/response'
+import { Buyer } from '../models/buyers';
+import { Bid } from '../models/bids';
+import controllers from '../controllers';
 const axios = require('axios');
 
 export class Notifier {
@@ -11,13 +14,9 @@ export class Notifier {
         this._otherContainers = ['subastas-node-app:3000', 'subastas-node-app-2:3000', 'subastas-node-app-3:3000']; 
     }
 
-    notifyToContainers(path: String, params: any){
-        return this.notifyTo(this._otherContainers, path, params);
-    }
+    notifyToContainers(params: any){}
 
-    notifyToClients(){
-
-    }
+    notifyToClients(params: any){}
 
     async notifyTo(destinations: String[], path: String, params: any){
         //TODO: Revisar alta disponibilidad de containers.
@@ -54,8 +53,16 @@ export class BidNotifier extends Notifier {
         super();
     }
 
-    notifyToContainers = (params: any) => {
+    notifyToContainers = (params: Bid) => {
         return super.notifyTo(this._otherContainers, 'bids/update', params);
+    }
+
+    notifyNewBidToClients(bid: Bid){
+        let currentBuyers = controllers.getCurrentBuyers();
+        let buyersToNotify = currentBuyers.filter( buyer => bid._tags.some( tag => buyer.tags.includes(tag) ))
+        let buyersIp = buyersToNotify.map(buyer => buyer._ip);
+        let message = {message: `Esta subasta podria interesarle: ${bid._id}`};
+        return super.notifyTo(buyersIp, '', message);
     }
     
 }
@@ -65,9 +72,11 @@ export class BuyerNotifier extends Notifier {
         super();
     }
 
-    notifyToContainers(params: any){
+    notifyToContainers(params: Buyer){
         return super.notifyTo(this._otherContainers, 'buyers/update', params);
     }
+
+    notifyToClients(){}
 
 }
 
