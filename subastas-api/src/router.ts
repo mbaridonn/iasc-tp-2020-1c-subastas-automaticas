@@ -7,21 +7,16 @@ export const register = (app: express.Application, mainNodes: String[], otherNod
         res.send('Hello World!');
     });
 
+    //BIDS
+
     app.get('/bids', async function (req, res) {
         try {
-            let bidsPromises = await Promise.all(mainNodes.map(async node => await getBidPromise(node) ));
-
-            bidsPromises.forEach(bidPromise => console.log(bidPromise.data));
-
-            let bids = bidsPromises.map(bidPromise => bidPromise.data);
-
-            res.json(flatBids(bids));
+            let bids = await getFromMainNodes(mainNodes, "bids");
+            res.json(bids);
 
         } catch (failedNode) {
             res.status(400);
             res.send("Hubo un error al cargar las subastas");
-            console.log(failedNode);
-
             replaceNode(failedNode);
         }
     })
@@ -40,6 +35,21 @@ export const register = (app: express.Application, mainNodes: String[], otherNod
             .then(response => res.send("Subasta agregada!"))
             .catch(error => console.log("Error agregando subasta"))
     })
+
+    //BUYERS
+
+    app.get('/buyers', async function (req, res) {
+        try {
+            let buyers = await getFromMainNodes(mainNodes, "buyers");
+            res.json(buyers);
+
+        } catch (failedNode) {
+            res.status(400);
+            res.send("Hubo un error al cargar los compradores");
+
+            replaceNode(failedNode);
+        }
+    })
 }
 
 const redirect = function (request: any) {
@@ -55,15 +65,19 @@ const redirect = function (request: any) {
     });
 }
 
+const getFromMainNodes = async (mainNodes: String[], endpoint: String) => {
+    let elementsPromises = await Promise.all(mainNodes.map(async node => await getPromiseFromNode(node, endpoint)));
+
+    let elements: any = elementsPromises.map(elementPromise => elementPromise.data);
+
+    return elements.flat();
+}
+
 //Chequear esto para ver donde esta la subasta
 const findNode = function () {
     return 0;
 }
 
-const flatBids = function (bids: any) {
-    return bids.flat();
-}
-
-const getBidPromise = (node: String) => {
-    return axios.get(`http://${node}/bids`);
+const getPromiseFromNode = (node: String, endpoint: String) => {
+    return axios.get(`http://${node}/${endpoint}`);
 }
