@@ -6,19 +6,19 @@ import axios from 'axios'
 // Create a new express app instance
 const app: express.Application = express();
 const port: number = 3000;
-let mainNodes: String[] = ['subastas-node-app:3000', 'subastas-node-app-2:3000', 'subastas-node-app-3:3000']; 
-let otherNodes: String[];
+let mainNodes: String[] = ['subastas-node-app:3000']; //por ahora tenemos un solo main node
+let otherNodes: String[] = ['subastas-node-app-2:3000', 'subastas-node-app-3:3000'];
 
 // let amountOfNodes = 0
 
 app.use(bodyParser.json());
 
-const replaceNode = function(failedNode: any){
-    let node = otherNodes.pop()
-    let index = mainNodes.indexOf(failedNode, 0)
-    mainNodes.splice(index, 1)
-    mainNodes.push(node)
-    otherNodes.push(failedNode)
+const replaceNode = function (failedNode: any) {
+    let node = otherNodes.pop();
+    let index = mainNodes.indexOf(failedNode, 0);
+    mainNodes.splice(index, 1);
+    mainNodes.push(node);
+    otherNodes.push(failedNode);
 }
 
 router.register(app, mainNodes, otherNodes, replaceNode);
@@ -27,14 +27,14 @@ app.listen(port, function () {
     console.log(`Server started at http://localhost:${port}`);
 });
 
-const pingNodes = function() {
+const pingNodes = function () {
     let nodes = mainNodes.concat(otherNodes)
-    nodes.forEach(node => function(){
+    nodes.forEach(node => function () {
         axios.get(`https://localhost:${node}/ping`).catch(err => replaceNode(node))
     })
 }
 
-const initScheduler = function(){
+const initScheduler = function () {
     const minutes = 3
     const interval = minutes * 60 * 1000
     setInterval(pingNodes, interval)

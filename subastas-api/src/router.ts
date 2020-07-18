@@ -9,7 +9,6 @@ export const register = (app: express.Application, mainNodes: String[], otherNod
 
     app.get('/bids', async function (req, res) {
         try {
-            //Chequear si nos queremos traer las subastas de todos los nodos o solo del primero
             let bidsPromises = await Promise.all(mainNodes.map(async node => await getBidPromise(node) ));
 
             bidsPromises.forEach(bidPromise => console.log(bidPromise.data));
@@ -23,7 +22,7 @@ export const register = (app: express.Application, mainNodes: String[], otherNod
             res.send("Hubo un error al cargar las subastas");
             console.log(failedNode);
 
-            // replaceNode(failedNode)
+            replaceNode(failedNode);
         }
     })
 
