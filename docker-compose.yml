@@ -14,11 +14,15 @@ services:
         - "8080:3000"
       networks: 
         - app-node-net
+        - app-node-net-2
+        - app-node-net-3
+
+#SUBASTAS 1
     subastas-app-1:
       build: 
         dockerfile: Dockerfile
         context: ./node-app
-      container_name: 'subastas-node-app'
+      container_name: 'subastas-node-app-1-1'
       restart: always
       volumes:
         - /app/node_modules
@@ -31,7 +35,7 @@ services:
       build: 
         dockerfile: Dockerfile
         context: ./node-app
-      container_name: 'subastas-node-app-2'
+      container_name: 'subastas-node-app-1-2'
       restart: always
       volumes:
         - /app/node_modules
@@ -44,7 +48,7 @@ services:
       build: 
         dockerfile: Dockerfile
         context: ./node-app
-      container_name: 'subastas-node-app-3'
+      container_name: 'subastas-node-app-1-3'
       restart: always
       volumes:
         - /app/node_modules
@@ -53,6 +57,92 @@ services:
         - "3003:3000"
       networks: 
         - app-node-net
+
+#SUBASTAS 2
+    subastas-app-2:
+      build: 
+        dockerfile: Dockerfile
+        context: ./node-app
+      container_name: 'subastas-node-app-2-1'
+      restart: always
+      volumes:
+        - /app/node_modules
+        - ./node-app:/app
+      ports: 
+        - "4001:3000"
+      networks: 
+        - app-node-net-2
+    subastas-app-2-2:
+      build: 
+        dockerfile: Dockerfile
+        context: ./node-app
+      container_name: 'subastas-node-app-2-2'
+      restart: always
+      volumes:
+        - /app/node_modules
+        - ./node-app:/app
+      ports: 
+        - "4002:3000"
+      networks: 
+        - app-node-net-2
+    subastas-app-2-3:
+      build: 
+        dockerfile: Dockerfile
+        context: ./node-app
+      container_name: 'subastas-node-app-2-3'
+      restart: always
+      volumes:
+        - /app/node_modules
+        - ./node-app:/app
+      ports: 
+        - "4003:3000"
+      networks: 
+        - app-node-net-2
+
+#SUBASTAS 3
+    subastas-app-3-1:
+      build: 
+        dockerfile: Dockerfile
+        context: ./node-app
+      container_name: 'subastas-node-app-3-1'
+      restart: always
+      volumes:
+        - /app/node_modules
+        - ./node-app:/app
+      ports: 
+        - "5001:3000"
+      networks: 
+        - app-node-net-3
+    subastas-app-3-2:
+      build: 
+        dockerfile: Dockerfile
+        context: ./node-app
+      container_name: 'subastas-node-app-3-2'
+      restart: always
+      volumes:
+        - /app/node_modules
+        - ./node-app:/app
+      ports: 
+        - "5002:3000"
+      networks: 
+        - app-node-net-3
+    subastas-app-3-3:
+      build: 
+        dockerfile: Dockerfile
+        context: ./node-app
+      container_name: 'subastas-node-app-3-3'
+      restart: always
+      volumes:
+        - /app/node_modules
+        - ./node-app:/app
+      ports: 
+        - "5003:3000"
+      networks: 
+        - app-node-net-3
 networks: 
   app-node-net:
+    driver: 'bridge'
+  app-node-net-2:
+    driver: 'bridge'
+  app-node-net-3:
     driver: 'bridge'
