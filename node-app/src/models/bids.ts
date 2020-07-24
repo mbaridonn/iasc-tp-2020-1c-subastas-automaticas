@@ -12,6 +12,16 @@ export class Bid {
         this._tags = tags;
     }
 
+
+    processOffer(newOffer: number){
+        if(this._basePrice < newOffer){
+            return {success: true, 
+                    message: `El nuevo precio de la subasta ${this._id} es de: ${newOffer} rupias`};
+        }
+        return {success: true, 
+                message: `Asegurece que el valor de la oferta sea mayor que: ${this._basePrice} rupias`};;
+    }
+
     get basePrice(){
         return this._basePrice;
     }

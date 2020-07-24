@@ -1,4 +1,4 @@
-import {addNewBid, getCurrentBids, updateBid} from './bidsContoller'
+import {addNewBid, getCurrentBids, updateBid, processNewOffer} from './bidsContoller'
 import {addNewBuyer, getCurrentBuyers, updateBuyer} from './buyersController'
 
 
@@ -8,5 +8,6 @@ export = {
     getCurrentBids,
     getCurrentBuyers,
     updateBuyer,
-    updateBid
+    updateBid,
+    processNewOffer
 }

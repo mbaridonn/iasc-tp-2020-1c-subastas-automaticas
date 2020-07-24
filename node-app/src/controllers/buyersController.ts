@@ -22,9 +22,9 @@ export const updateBuyer = (ip:String, name?:String, tags?:String[]) => {
     if(buyer == undefined){
         return addNewBuyer(ip, name, tags, false);        
     }else{
-        buyer._name = (name != null || name != undefined) ? name : buyer._name;
-        buyer._ip = (ip != null || ip != undefined) ? ip : buyer._ip;
-        buyer._tags = (tags != null || tags != undefined) ? tags : buyer._tags;
+        buyer._name =  name || buyer._name;
+        buyer._ip = ip || buyer._ip;
+        buyer._tags = tags || buyer._tags;
 
         let index = buyersList.indexOf(buyer);
         buyersList[index] = buyer;

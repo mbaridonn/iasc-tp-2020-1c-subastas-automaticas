@@ -1,11 +1,12 @@
 import { Bid } from '../models/bids';
 import { createJsonResponse } from '../utils/response';
 import { BidNotifier } from '../utils/notifier';
+import { getCurrentBuyers } from './buyersController'
 
 let bidsList: Bid[] = [];
 let notifier = new BidNotifier();
 
-export const addNewBid = (basePrice: number, hours: number, tags: String[], notify: boolean = true) => {
+export const addNewBid = async (basePrice: number, hours: number, tags: String[], notifyToContainers: boolean = true) => {
     let id = 1;
 
     if (bidsList.length > 0) {
@@ -15,13 +16,39 @@ export const addNewBid = (basePrice: number, hours: number, tags: String[], noti
     let bid = new Bid(id, basePrice, hours, tags);
     bidsList.push(bid);
 
-    if(notify){
-        notifier.notifyToContainers(bid); 
+    if(notifyToContainers){
+        let retriesCounter = 0;
+        await notifier.notifyToContainers(bid)
+        .then(resp => {
+            return resp;
+        })
+        .catch(err => {
+            if(retriesCounter < 5){
+                setTimeout(() => {
+                    retriesCounter++;
+                    notifier.notifyToContainers(bid);                    
+                }, 5000);
+            }else{
+                return createJsonResponse(`Ha ocurrido un error al persistir.`, 400);
+            }
+        }); 
     }
-
-    return createJsonResponse(bid, 200);
+    let currentBuyers = getCurrentBuyers();
+    await notifier.notifyBidToBuyers(bid, currentBuyers, `Esta subasta podria interesarle: ${bid._id}`)             
+    return createJsonResponse(bid, 200); 
 }
 
+export const processNewOffer = async (bidId:number, newOffer: number, buyerIp: String) => {
+    let bid = getBidById(bidId);
+    let processedBid = await bid.processOffer(newOffer);
+    if(processedBid.success){
+        let currentBuyers = getCurrentBuyers();
+        await notifier.notifyBidToBuyers(bid, currentBuyers, processedBid.message)
+        return createJsonResponse(processedBid.message, 200);
+    }else{
+        return createJsonResponse(processedBid.message, 400);
+    }
+}
 
 export const updateBid = (id: number, basePrice?: number, hours?: number, tags?: String[]) => {
     let bid: Bid = bidsList.find((b: Bid) => {
@@ -45,3 +72,7 @@ export const updateBid = (id: number, basePrice?: number, hours?: number, tags?:
 
 
 export const getCurrentBids = () => { return bidsList };
+
+export const getBidById = (bidId: number) => { 
+    return bidsList.find(bid => bid._id == bidId);
+};

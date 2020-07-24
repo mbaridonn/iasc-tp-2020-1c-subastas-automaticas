@@ -4,11 +4,7 @@ import express from 'express';
 export const register = (app: express.Application) => {
 
     //////// Datos de prueba ///////
-    
-    controllers.addNewBuyer('Juan', '190.19.4.92', ['tech', 'movies'], false);
-    controllers.addNewBuyer('Carlos', '190.19.4.14', ['tech', 'movies'], false);
 
-    controllers.addNewBid(100, 3, ['tech', 'movies'], false);
 
 /*** Routes ***/
 
@@ -23,9 +19,15 @@ export const register = (app: express.Application) => {
         res.json(controllers.getCurrentBids());
     });
 
-    app.post('/bids/new', function (req, res) {
+    app.post('/bids/new', async function (req, res) {
         let {basePrice, hours, tags} = req.body;
-        let response = controllers.addNewBid(basePrice, hours, tags);
+        let response = await controllers.addNewBid(basePrice, hours, tags); 
+        res.send(response);
+    });
+
+    app.post('/bids/new/offer', function (req, res) {
+        let {bidId, newPrice, buyerIp} = req.body;
+        let response = controllers.processNewOffer(bidId, newPrice, buyerIp);
         res.send(response);
     });
 
@@ -52,6 +54,12 @@ export const register = (app: express.Application) => {
         let {_name, _ip, _tags} = req.body;
         let response = controllers.updateBuyer(_ip, _name, _tags);
         res.send(response);
+    });
+
+
+
+    app.get('/muyBienDiez', function (req, res) {
+        res.json('MUY BIEN 10 ;)');
     });
 
 }

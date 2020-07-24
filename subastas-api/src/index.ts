@@ -13,6 +13,12 @@ let otherNodes: String[] = ['subastas-node-app-2:3000', 'subastas-node-app-3:300
 
 app.use(bodyParser.json());
 
+
+/************************************
+            Muy Bien 10
+*************************************/
+
+
 const replaceNode = function (failedNode: any) {
     let node = otherNodes.pop();
     let index = mainNodes.indexOf(failedNode, 0);
