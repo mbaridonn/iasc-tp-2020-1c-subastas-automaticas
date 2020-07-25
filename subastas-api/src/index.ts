@@ -6,8 +6,8 @@ import axios from 'axios'
 // Create a new express app instance
 const app: express.Application = express();
 const port: number = 3000;
-let mainNodes: String[]; //por ahora tenemos un solo main node
-let otherNodes: String[][];
+let mainNodes: String[] = []; //por ahora tenemos un solo main node
+let otherNodes: String[][] = [];
 let bidMap: number[][]
 let nextNodeId = 1
 const NODE_COUNT = 3
@@ -47,7 +47,7 @@ app.listen(port, function () {
 const pingNodes = function () {
     let nodes = mainNodes.concat(flattenedOtherNodes())
     nodes.forEach(node => function () {
-        axios.get(`https://localhost:${node}/ping`).catch(err => replaceNode(node))
+        axios.get(`https://${node}/ping`).catch(err => replaceNode(node))
     })
 }
 
@@ -58,7 +58,7 @@ const initScheduler = function () {
 }
 
 const initNodeLists = function () {
-  for (const i = 1; i <= NODE_COUNT; ++i) {
+  for (let i = 1; i <= NODE_COUNT; ++i) {
     mainNodes.push(`subastas-node-app-${i}-1:3000`)
     otherNodes.push([`subastas-node-app-${i}-2:3000`,`subastas-node-app-${i}-3:3000`])
   }

@@ -23,19 +23,37 @@ export const register = (app: express.Application, mainNodes: String[], otherNod
     })
 
     app.post('/bids', function (req, res) {
-        //Chequear esto para ver donde esta la subasta
         const clusterToAddBid = bidCount(bidMap) % mainNodes.length + 1
         const nodeToAddBid = mainNodes[clusterToAddBid]
 
         req.body.id = nextNodeId;
 
         redirect(req, nodeToAddBid)
-            .then(response => addToBidMap(bidMap, nextNodeId, clusterToAddBid)) //probablemente haya que modificar addToBidMap para que funcione como promise
+            .then(response => addToBidMap(bidMap, nextNodeId, clusterToAddBid))
             .then(response => res.send("Subasta agregada!"))
             .catch(error => console.log("Error agregando subasta"))
     })
 
-    //TODO: hacer metodo para que le avisen a api que cerro una subasta, asi puede updatear el bidmap
+    app.post('/bids/close', function (req, res) {
+      const clusterToCloseBid = findBidCluster(bidMap, req.body.id)
+      const index = bidMap[clusterToCloseBid].indexOf(req.body.id);
+      bidMap[clusterToCloseBid].splice(index, 1)
+      res.send('Subasta terminada')
+    })
+
+    app.put('/bids', function (req, res) {
+      const clusterToAddBid = findBidCluster(bidMap, req.body.id)
+
+      if(clusterToAddBid == -1){
+        res.send("No existe la subasta!")
+      }
+
+      const bidNode = mainNodes[clusterToAddBid]
+
+      redirect(req, bidNode)
+          .then(response => res.send("Subasta modificada!"))
+          .catch(error => console.log("Error modificando subasta"))
+    })
 
     //BUYERS
 
@@ -54,11 +72,9 @@ export const register = (app: express.Application, mainNodes: String[], otherNod
 }
 
 const redirect = function (request: any, nodeToAddBid: String) {
-    const { method, originalUrl, body, headers } = request;
-    //Revisar la url a la que tiene que llamarse
-    const url = originalUrl.replace("8080", nodeToAddBid)
+    const { method, url, body, headers } = request;
     return axios({
-        url: url,
+        url: `http://${nodeToAddBid}${url}`, //revisar que esto sea asi
         method: method,
         data: body,
         headers: headers
@@ -82,7 +98,19 @@ const bidCount = function(bidMap: number[][]) {
 }
 
 //ver si esto updatea realmente. modifica el valor de la referencia? no se, todavia no se mucho de js. lo veremos en el proximo capitulo de dragon ball z
-const addToBidMap = function(bidmap: number[][], nextNodeId: number, clusterToAddBid: number) {
+const addToBidMap = async function(bidmap: number[][], nextNodeId: number, clusterToAddBid: number) {
   ++nextNodeId;
   bidmap[clusterToAddBid].push(nextNodeId);
+}
+
+const findBidCluster = function(bidMap: number[][], bidId: number) {
+  let i = 0;
+  for(; i < bidMap.length; ++i) {
+    if (bidMap[i].includes(bidId)) break;
+  }
+
+  if (i >= bidMap.length)
+    return -1
+
+  return i + 1;
 }
