@@ -1,6 +1,23 @@
 version: '3'
 
 services:
+
+#CLIENTE
+    cliente:
+      build:
+          dockerfile: Dockerfile
+          context: ./cliente
+      container_name: 'cliente'
+      restart: always
+      volumes:
+        - /app/node_modules
+        - ./cliente:/app
+      ports:
+        - "8081:3000"
+      networks: 
+        - app-node-net
+
+#SUBASTAS API
     subastas-api:
       build:
           dockerfile: Dockerfile
