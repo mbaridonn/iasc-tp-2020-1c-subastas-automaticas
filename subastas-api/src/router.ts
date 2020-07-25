@@ -1,7 +1,8 @@
-import express from 'express';
+import express, { response } from 'express';
 import axios from 'axios'
 
-export const register = (app: express.Application, mainNodes: String[], otherNodes: String[], replaceNode: (failedNodes: String[]) => any) => {
+export const register = (app: express.Application, mainNodes: String[], otherNodes: String[][], bidMap: number[][],
+                         nextNodeId: number, replaceNode: (failedNodes: String[]) => any) => {
 
     app.get('/', function (req, res) {
         res.send('Hello World!');
@@ -22,19 +23,19 @@ export const register = (app: express.Application, mainNodes: String[], otherNod
     })
 
     app.post('/bids', function (req, res) {
-        redirect(req)
-            .then(response => res.send("Subasta agregada!"))
-            .catch(error => console.log("Error agregando subasta"))
-    })
-
-    app.post('/bids', function (req, res) {
         //Chequear esto para ver donde esta la subasta
-        const node = mainNodes[Math.floor(Math.random() * mainNodes.length)]
+        const clusterToAddBid = bidCount(bidMap) % mainNodes.length + 1
+        const nodeToAddBid = mainNodes[clusterToAddBid]
 
-        redirect(req)
+        req.body.id = nextNodeId;
+
+        redirect(req, nodeToAddBid)
+            .then(response => addToBidMap(bidMap, nextNodeId, clusterToAddBid)) //probablemente haya que modificar addToBidMap para que funcione como promise
             .then(response => res.send("Subasta agregada!"))
             .catch(error => console.log("Error agregando subasta"))
     })
+
+    //TODO: hacer metodo para que le avisen a api que cerro una subasta, asi puede updatear el bidmap
 
     //BUYERS
 
@@ -52,11 +53,10 @@ export const register = (app: express.Application, mainNodes: String[], otherNod
     })
 }
 
-const redirect = function (request: any) {
-    const node = findNode()
+const redirect = function (request: any, nodeToAddBid: String) {
     const { method, originalUrl, body, headers } = request;
     //Revisar la url a la que tiene que llamarse
-    const url = originalUrl.replace("8080", node)
+    const url = originalUrl.replace("8080", nodeToAddBid)
     return axios({
         url: url,
         method: method,
@@ -73,11 +73,16 @@ const getFromMainNodes = async (mainNodes: String[], endpoint: String) => {
     return elements.flat();
 }
 
-//Chequear esto para ver donde esta la subasta
-const findNode = function () {
-    return 0;
-}
-
 const getPromiseFromNode = (node: String, endpoint: String) => {
     return axios.get(`http://${node}/${endpoint}`);
+}
+
+const bidCount = function(bidMap: number[][]) {
+  return bidMap.reduce((total, clusterBids) => total + clusterBids.length, 0)
+}
+
+//ver si esto updatea realmente. modifica el valor de la referencia? no se, todavia no se mucho de js. lo veremos en el proximo capitulo de dragon ball z
+const addToBidMap = function(bidmap: number[][], nextNodeId: number, clusterToAddBid: number) {
+  ++nextNodeId;
+  bidmap[clusterToAddBid].push(nextNodeId);
 }
