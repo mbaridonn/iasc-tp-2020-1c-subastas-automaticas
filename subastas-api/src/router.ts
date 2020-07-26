@@ -23,7 +23,7 @@ export const register = (app: express.Application, mainNodes: String[], otherNod
     })
 
     app.post('/bids', function (req, res) {
-        const clusterToAddBid = bidCount(bidMap) % mainNodes.length + 1
+        const clusterToAddBid = nextBidCluster(bidMap)
         const nodeToAddBid = mainNodes[clusterToAddBid]
 
         req.body.id = nextNodeId;
@@ -74,7 +74,7 @@ export const register = (app: express.Application, mainNodes: String[], otherNod
 const redirect = function (request: any, nodeToAddBid: String) {
     const { method, url, body, headers } = request;
     return axios({
-        url: `http://${nodeToAddBid}${url}`, //revisar que esto sea asi
+        url: `http://${nodeToAddBid}${url}`,
         method: method,
         data: body,
         headers: headers
@@ -93,8 +93,9 @@ const getPromiseFromNode = (node: String, endpoint: String) => {
     return axios.get(`http://${node}/${endpoint}`);
 }
 
-const bidCount = function(bidMap: number[][]) {
-  return bidMap.reduce((total, clusterBids) => total + clusterBids.length, 0)
+const nextBidCluster = function(bidMap: number[][]) {
+  const bidCounts = bidMap.map(bids => bids.length)
+  return bidMap.indexOf(Math.min.apply(Math, bidCounts)) + 1
 }
 
 //ver si esto updatea realmente. modifica el valor de la referencia? no se, todavia no se mucho de js. lo veremos en el proximo capitulo de dragon ball z
