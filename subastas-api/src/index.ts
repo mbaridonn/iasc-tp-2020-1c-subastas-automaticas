@@ -8,7 +8,7 @@ const app: express.Application = express();
 const port: number = 3000;
 let mainNodes: String[] = []; //por ahora tenemos un solo main node
 let otherNodes: String[][] = [];
-let bidMap: number[][]
+let bidMap: number[][] = [[], [], []];
 let nextNodeId = 1
 const NODE_COUNT = 3
 

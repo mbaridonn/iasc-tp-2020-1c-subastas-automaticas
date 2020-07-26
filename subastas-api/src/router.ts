@@ -22,16 +22,31 @@ export const register = (app: express.Application, mainNodes: String[], otherNod
         }
     })
 
-    app.post('/bids', function (req, res) {
+    app.post('/bids/new', async function (req, res) {
+      try{
         const clusterToAddBid = nextBidCluster(bidMap)
         const nodeToAddBid = mainNodes[clusterToAddBid]
-
         req.body.id = nextNodeId;
 
-        redirect(req, nodeToAddBid)
-            .then(response => addToBidMap(bidMap, nextNodeId, clusterToAddBid))
-            .then(response => res.send("Subasta agregada!"))
-            .catch(error => console.log("Error agregando subasta"))
+        await axios.post(`http://${nodeToAddBid}/bids/new`, req.body);
+
+        res.send("Subasta agregada!");
+
+        addToBidMap(bidMap, nextNodeId, clusterToAddBid);        
+
+      }catch(error){
+        res.status(400);
+        res.send("Error agregando subasta");
+      }
+
+      // const clusterToAddBid = nextBidCluster(bidMap)
+      // const nodeToAddBid = mainNodes[clusterToAddBid]
+      // req.body.id = nextNodeId;
+
+      //   redirect(req, nodeToAddBid)
+      //       .then(response => addToBidMap(bidMap, nextNodeId, clusterToAddBid))
+      //       .then(response => res.send("Subasta agregada!"))
+      //       .catch(error => {console.log("Error agregando subasta"))
     })
 
     app.post('/bids/close', function (req, res) {
@@ -74,9 +89,9 @@ export const register = (app: express.Application, mainNodes: String[], otherNod
 const redirect = function (request: any, nodeToAddBid: String) {
     const { method, url, body, headers } = request;
     return axios({
-        url: `http://${nodeToAddBid}${url}`,
+        url: `${nodeToAddBid}${url}`,
         method: method,
-        data: body,
+        data: body.data,
         headers: headers
     });
 }
@@ -95,13 +110,13 @@ const getPromiseFromNode = (node: String, endpoint: String) => {
 
 const nextBidCluster = function(bidMap: number[][]) {
   const bidCounts = bidMap.map(bids => bids.length)
-  return bidMap.indexOf(Math.min.apply(Math, bidCounts)) + 1
+  return bidCounts.indexOf(Math.min.apply(Math, bidCounts))
 }
 
 //ver si esto updatea realmente. modifica el valor de la referencia? no se, todavia no se mucho de js. lo veremos en el proximo capitulo de dragon ball z
 const addToBidMap = async function(bidmap: number[][], nextNodeId: number, clusterToAddBid: number) {
-  ++nextNodeId;
   bidmap[clusterToAddBid].push(nextNodeId);
+  nextNodeId++;
 }
 
 const findBidCluster = function(bidMap: number[][], bidId: number) {
