@@ -8,16 +8,9 @@ let bidsList: Bid[] = [];
 let notifier = new BidNotifier();
 
 
-export const addNewBid = async (basePrice: number, hours: number, tags: String[], notifyFlag: boolean = true) => {
-    let id = 1;
-
-    if (bidsList.length > 0) {
-        var lastExistingId = bidsList.slice(-1)[0].id;
-        id = lastExistingId + 1;
-    }
+export const addNewBid = async (id: number, basePrice: number, hours: number, tags: String[], notifyFlag: boolean = true) => {
     let bid = new Bid(id, basePrice, hours, tags);
     bidsList.push(bid);
-
 
     if(notifyFlag){
         await notifyToContainers(bid);
@@ -58,7 +51,7 @@ export const updateBid = (id: number, basePrice?: number, hours?: number, tags?:
 
     if(bid == undefined){
         //TODO: Revisar creacion de IDs
-        return addNewBid(basePrice, hours, tags, false);        
+        return addNewBid(id, basePrice, hours, tags, false);        
     }else{
         bid._basePrice = basePrice || bid._basePrice;
         bid._hours = hours || bid._hours;

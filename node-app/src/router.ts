@@ -20,8 +20,8 @@ export const register = (app: express.Application) => {
     });
 
     app.post('/bids/new', async function (req, res) {
-        let {basePrice, hours, tags} = req.body;
-        let response = await controllers.addNewBid(basePrice, hours, tags); 
+        let {id, basePrice, hours, tags} = req.body;
+        let response = await controllers.addNewBid(id, basePrice, hours, tags); 
         res.send(response);
     });
 
