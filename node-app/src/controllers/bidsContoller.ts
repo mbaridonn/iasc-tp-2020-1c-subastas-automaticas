@@ -1,4 +1,5 @@
 import { Bid } from '../models/bids';
+import { Buyer } from '../models/buyers';
 import { createJsonResponse } from '../utils/response';
 import { BidNotifier } from '../utils/notifier';
 import { getCurrentBuyers } from './buyersController'
@@ -6,7 +7,8 @@ import { getCurrentBuyers } from './buyersController'
 let bidsList: Bid[] = [];
 let notifier = new BidNotifier();
 
-export const addNewBid = async (basePrice: number, hours: number, tags: String[], notifyToContainers: boolean = true) => {
+
+export const addNewBid = async (basePrice: number, hours: number, tags: String[], notifyFlag: boolean = true) => {
     let id = 1;
 
     if (bidsList.length > 0) {
@@ -16,27 +18,25 @@ export const addNewBid = async (basePrice: number, hours: number, tags: String[]
     let bid = new Bid(id, basePrice, hours, tags);
     bidsList.push(bid);
 
-    if(notifyToContainers){
-        let retriesCounter = 0;
-        await notifier.notifyToContainers(bid)
-        .then(resp => {
-            return resp;
+
+    if(notifyFlag){
+        await notifyToContainers(bid);
+        bid.start() //Notify end of bid
+        .then(response => {
+            return notifyEndOfBid(response).then(resp => {
+                return resp;
+            })
         })
-        .catch(err => {
-            if(retriesCounter < 5){
-                setTimeout(() => {
-                    retriesCounter++;
-                    notifier.notifyToContainers(bid);                    
-                }, 5000);
-            }else{
-                return createJsonResponse(`Ha ocurrido un error al persistir.`, 400);
-            }
-        }); 
+        .catch(error => {
+            return createJsonResponse({message: `Fallo al finalizar la subasta: ${bid._id}`}, 400);
+        });
+
+        let currentBuyers = getCurrentBuyers();
+        let asd = await notifier.notifyBidToBuyers(bid, currentBuyers, `Esta subasta podria interesarle: ${bid._id}`)   
     }
-    let currentBuyers = getCurrentBuyers();
-    await notifier.notifyBidToBuyers(bid, currentBuyers, `Esta subasta podria interesarle: ${bid._id}`)             
     return createJsonResponse(bid, 200); 
 }
+
 
 export const processNewOffer = async (bidId:number, newOffer: number, buyerIp: String) => {
     let bid = getBidById(bidId);
@@ -50,6 +50,7 @@ export const processNewOffer = async (bidId:number, newOffer: number, buyerIp: S
     }
 }
 
+
 export const updateBid = (id: number, basePrice?: number, hours?: number, tags?: String[]) => {
     let bid: Bid = bidsList.find((b: Bid) => {
         return b._id == id
@@ -59,9 +60,9 @@ export const updateBid = (id: number, basePrice?: number, hours?: number, tags?:
         //TODO: Revisar creacion de IDs
         return addNewBid(basePrice, hours, tags, false);        
     }else{
-        bid._basePrice = (basePrice != null || basePrice != undefined) ? basePrice : bid._basePrice;
-        bid._hours = (hours != null || hours != undefined) ? hours : bid._hours;
-        bid._tags = (tags != null || tags != undefined) ? tags : bid._tags;
+        bid._basePrice = basePrice || bid._basePrice;
+        bid._hours = hours || bid._hours;
+        bid._tags = tags || bid._tags;
     
         let index = bidsList.indexOf(bid);
         bidsList[index] = bid;
@@ -70,8 +71,31 @@ export const updateBid = (id: number, basePrice?: number, hours?: number, tags?:
     }
 }
 
+export const notifyEndOfBid = async (bid:Bid) =>{
+    return await notifier.notifyBidToBuyers(bid, getCurrentBuyers(), `La subasta ${bid._id} a finalizado a las ${bid._finish.toLocaleString()}. Felicitamos al ganador: ${bid._actualWinner}!`);
+}
+
+const notifyToContainers = async (bid:Bid) => {
+    let retriesCounter = 0;
+        await notifier.notifyToContainers(bid)
+        .then(resp => {
+            return resp;
+        })
+        .catch(err => {
+            if(retriesCounter < 5){
+                setTimeout(() => {
+                    retriesCounter++;
+                    return notifier.notifyToContainers(bid);                    
+                }, 5000);
+            }else{
+                return createJsonResponse(`Ha ocurrido un error al persistir.`, 400);
+            }
+        }); 
+}
+
 
 export const getCurrentBids = () => { return bidsList };
+
 
 export const getBidById = (bidId: number) => { 
     return bidsList.find(bid => bid._id == bidId);

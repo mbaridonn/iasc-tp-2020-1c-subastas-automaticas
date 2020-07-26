@@ -45,13 +45,13 @@ export const register = (app: express.Application) => {
     });
 
     app.post('/buyers/new', function (req, res) {
-        let {name, ip, tags} = req.body;
+        let {ip, tags, name} = req.body;
         let response = controllers.addNewBuyer(name, ip, tags);
         res.send(response);
     });
 
     app.post('/buyers/update', function (req, res) {
-        let {_name, _ip, _tags} = req.body;
+        let {_name,_ip, _tags} = req.body;
         let response = controllers.updateBuyer(_ip, _name, _tags);
         res.send(response);
     });
