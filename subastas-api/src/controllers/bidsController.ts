@@ -4,6 +4,7 @@ import axios from 'axios'
 let bidMap: number[][] = [[], [], []];
 
 export const getAllBidsFromNodes = async (mainNodes: String[]) => {
+  console.log(bidMap)
     return await getFromMainNodes(mainNodes, "bids");
 }
 
@@ -26,12 +27,12 @@ export const closeBid = async (bid: any) => {
 export const updateBid = async (mainNodes: String[], bid: any) => {
     let responseMessage = "";
 
-    const clusterToAddBid = findBidCluster(bidMap, bid.id);
+    const clusterToUpdateBid = findBidCluster(bidMap, bid.id);
 
-    if (clusterToAddBid == -1) {
+    if (clusterToUpdateBid == -1) {
         responseMessage = "No existe la subasta!";
     } else {
-        const bidNode = mainNodes[clusterToAddBid];
+        const bidNode = mainNodes[clusterToUpdateBid];
         //ToDo: hacer put con axios
         responseMessage = "Subasta modificada!";
     }
@@ -64,5 +65,5 @@ const findBidCluster = function (bidMap: number[][], bidId: number) {
     if (i >= bidMap.length)
         return -1
 
-    return i + 1;
+    return i;
 }

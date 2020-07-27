@@ -1,5 +1,8 @@
 import { Buyer } from "./buyers";
 import controllers from '../controllers';
+import axios from 'axios'
+
+const API_URL = 'subastas-api:3000'
 
 export class Bid {
     _basePrice: number;
@@ -37,8 +40,9 @@ export class Bid {
         console.log("Iniciando subasta: ",this._id, "a las", this._started.toLocaleString());
         setTimeout(() => {
             console.log("Finalizando subasta: ",this._id, "a las", this._finish.toLocaleString());
-           resolve(this as Bid); 
-        }, this._finish.getTime() - this._started.getTime());
+            axios.post(`http://${API_URL}/bids/close`, { id: this._id });
+            resolve(this as Bid); 
+        },  this._finish.getTime() - this._started.getTime());
        });
     };
 
