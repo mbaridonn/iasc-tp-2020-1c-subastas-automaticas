@@ -25,13 +25,13 @@ export const register = (app: express.Application) => {
         res.send(response);
     });
 
-    app.post('/bids/new/offer', function (req, res) {
+    app.post('/bids/offer', function (req, res) {
         let {bidId, newPrice, buyerIp} = req.body;
         let response = controllers.processNewOffer(bidId, newPrice, buyerIp);
         res.send(response);
     });
 
-    app.post('/bids/update', function (req, res) {
+    app.put('/bids', function (req, res) {
         let {_id, _basePrice, _hours, _tags} = req.body;
         let response = controllers.updateBid(_id, _basePrice, _hours, _tags);
         res.send(response);

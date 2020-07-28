@@ -4,7 +4,6 @@ import axios from 'axios'
 let bidMap: number[][] = [[], [], []];
 
 export const getAllBidsFromNodes = async (mainNodes: String[]) => {
-  console.log(bidMap)
     return await getFromMainNodes(mainNodes, "bids");
 }
 
@@ -33,11 +32,17 @@ export const updateBid = async (mainNodes: String[], bid: any) => {
         responseMessage = "No existe la subasta!";
     } else {
         const bidNode = mainNodes[clusterToUpdateBid];
-        //ToDo: hacer put con axios
+        await axios.put(`http://${bidNode}/bids`, bid);
         responseMessage = "Subasta modificada!";
     }
 
     return responseMessage;
+}
+
+export const addNewBidOffer = async (mainNodes: String[], bid: any) => {
+    const clusterToAddBidOffer = findBidCluster(bidMap, bid.id)
+    const nodeToAddBidOffer = mainNodes[clusterToAddBidOffer]
+    await axios.post(`http://${nodeToAddBidOffer}/bids/offer`, bid);
 }
 
 const getNextNodeId = () => {
