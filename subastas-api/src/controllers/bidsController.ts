@@ -2,6 +2,7 @@ import { getFromMainNodes } from '../utils/nodes';
 import axios from 'axios'
 
 let bidMap: number[][] = [[], [], []];
+let bidId: number = 0;
 
 export const getAllBidsFromNodes = async (mainNodes: String[]) => {
     return await getFromMainNodes(mainNodes, "bids");
@@ -10,7 +11,8 @@ export const getAllBidsFromNodes = async (mainNodes: String[]) => {
 export const addNewBid = async (mainNodes: String[], bid: any) => {
     const clusterToAddBid = nextBidCluster(bidMap)
     const nodeToAddBid = mainNodes[clusterToAddBid]
-    bid.id = getNextNodeId();
+    bidId++;
+    bid.id = bidId;
 
     await axios.post(`http://${nodeToAddBid}/bids/new`, bid);
 
