@@ -3,6 +3,7 @@ import { Buyer } from '../models/buyers';
 import { createJsonResponse } from '../utils/response';
 import { BidNotifier } from '../utils/notifier';
 import { getCurrentBuyers } from './buyersController'
+import axios from 'axios'
 
 let bidsList: Bid[] = [];
 let notifier = new BidNotifier();
@@ -92,4 +93,14 @@ export const getCurrentBids = () => { return bidsList };
 
 export const getBidById = (bidId: number) => { 
     return bidsList.find(bid => bid._id == bidId);
+};
+
+export const initializeBidsFromOtherNode =  async (node: String) => {
+  try {
+    const bids = await axios.get(`http://${node}/bids`)
+    bids.data.forEach((bid: Bid) => { addNewBid(bid._id, bid._basePrice, bid._hours, bid._tags, false) });
+  }
+  catch{
+    console.error('No se pudieron levantar las bids')
+  }
 };

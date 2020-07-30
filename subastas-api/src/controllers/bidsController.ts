@@ -29,7 +29,6 @@ export const updateBid = async (mainNodes: String[], bid: any) => {
     let responseMessage = "";
 
     const clusterToUpdateBid = findBidCluster(bidMap, bid.id);
-
     if (clusterToUpdateBid == -1) {
         responseMessage = "No existe la subasta!";
     } else {
