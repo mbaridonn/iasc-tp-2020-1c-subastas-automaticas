@@ -37,8 +37,8 @@ export const register = (app: express.Application, mainNodes: String[], otherNod
 
   app.post('/bids/offer', async function (req, res) {
     try {
-      let bid = req.body;
-      controllers.addNewBidOffer(mainNodes, bid);
+      let offer = req.body
+      controllers.addNewBidOffer(mainNodes, offer);
       res.send("Oferta recibida!");
 
     } catch (error) {

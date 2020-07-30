@@ -40,10 +40,10 @@ export const updateBid = async (mainNodes: String[], bid: any) => {
     return responseMessage;
 }
 
-export const addNewBidOffer = async (mainNodes: String[], bid: any) => {
-    const clusterToAddBidOffer = findBidCluster(bidMap, bid.id)
+export const addNewBidOffer = async (mainNodes: String[], offer: any) => {
+    const clusterToAddBidOffer = findBidCluster(bidMap, offer.bidId)
     const nodeToAddBidOffer = mainNodes[clusterToAddBidOffer]
-    await axios.post(`http://${nodeToAddBidOffer}/bids/offer`, bid);
+    await axios.post(`http://${nodeToAddBidOffer}/bids/offer`, offer);
 }
 
 const getNextNodeId = () => {
