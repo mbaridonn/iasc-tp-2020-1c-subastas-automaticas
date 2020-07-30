@@ -1,116 +1,108 @@
 import express, { response } from 'express';
+import controllers from './controllers';
 import axios from 'axios'
 
-export const register = (app: express.Application, mainNodes: String[], otherNodes: String[][], bidMap: number[][],
-                         nextNodeId: number, replaceNode: (failedNodes: String[]) => any) => {
+export const register = (app: express.Application, mainNodes: String[], otherNodes: String[][], replaceNode: (failedNodes: String[]) => any) => {
 
-    app.get('/', function (req, res) {
-        res.send('Hello World!');
-    });
+  app.get('/', function (req, res) {
+    res.send('Hello World!');
+  });
 
-    //BIDS
+  //BIDS
 
-    app.get('/bids', async function (req, res) {
-        try {
-            let bids = await getFromMainNodes(mainNodes, "bids");
-            res.json(bids);
+  app.get('/bids', async function (req, res) {
+    try {
+      let bids = await controllers.getAllBidsFromNodes(mainNodes);
+      res.json(bids);
 
-        } catch (failedNode) {
-            res.status(400);
-            res.send("Hubo un error al cargar las subastas");
-            replaceNode(failedNode);
-        }
-    })
+    } catch (failedNode) {
+      res.status(400);
+      res.send("Hubo un error al cargar las subastas");
+      replaceNode(failedNode);
+    }
 
-    app.post('/bids', function (req, res) {
-        const clusterToAddBid = bidCount(bidMap) % mainNodes.length + 1
-        const nodeToAddBid = mainNodes[clusterToAddBid]
+  })
 
-        req.body.id = nextNodeId;
+  app.post('/bids/new', async function (req, res) {
+    try {
+      let bid = req.body;
+      controllers.addNewBid(mainNodes, bid);
+      res.send("Subasta agregada!");
 
-        redirect(req, nodeToAddBid)
-            .then(response => addToBidMap(bidMap, nextNodeId, clusterToAddBid))
-            .then(response => res.send("Subasta agregada!"))
-            .catch(error => console.log("Error agregando subasta"))
-    })
+    } catch (error) {
+      res.status(400);
+      res.send("Error agregando la subasta");
+    }
+  })
 
-    app.post('/bids/close', function (req, res) {
-      const clusterToCloseBid = findBidCluster(bidMap, req.body.id)
-      const index = bidMap[clusterToCloseBid].indexOf(req.body.id);
-      bidMap[clusterToCloseBid].splice(index, 1)
-      res.send('Subasta terminada')
-    })
+  app.post('/bids/offer', async function (req, res) {
+    try {
+      let bid = req.body;
+      controllers.addNewBidOffer(mainNodes, bid);
+      res.send("Oferta recibida!");
 
-    app.put('/bids', function (req, res) {
-      const clusterToAddBid = findBidCluster(bidMap, req.body.id)
+    } catch (error) {
+      res.status(400);
+      res.send("Error enviando la oferta");
+    }
+  })
 
-      if(clusterToAddBid == -1){
-        res.send("No existe la subasta!")
-      }
+  app.post('/bids/close', function (req, res) {
+    try{
+      let bid = req.body;
+      controllers.closeBid(bid);
+      res.send('Subasta terminada');
 
-      const bidNode = mainNodes[clusterToAddBid]
+    } catch(error){
+      res.status(400);
+      res.send("Error cerrando la subasta");
+    }
+  })
 
-      redirect(req, bidNode)
-          .then(response => res.send("Subasta modificada!"))
-          .catch(error => console.log("Error modificando subasta"))
-    })
+  app.put('/bids', function (req, res) {
+    try{
+      let bid = req.body;
+      let responseMessage = controllers.updateBid(mainNodes, bid);
+      res.send(responseMessage);
 
-    //BUYERS
+    }catch(error){
+      res.status(400);
+      res.send("Error al modificar la subasta");
+    }
+  })
 
-    app.get('/buyers', async function (req, res) {
-        try {
-            let buyers = await getFromMainNodes(mainNodes, "buyers");
-            res.json(buyers);
+  //BUYERS
 
-        } catch (failedNode) {
-            res.status(400);
-            res.send("Hubo un error al cargar los compradores");
+  app.get('/buyers', async function (req, res) {
+    try {
+      let buyers = await controllers.getAllBuyersFromNodes(mainNodes);
+      res.json(buyers);
+    } catch (failedNode) {
+      res.status(400);
+      res.send("Hubo un error al cargar los compradores");
+      replaceNode(failedNode);
+    }
+  })
 
-            replaceNode(failedNode);
-        }
-    })
+  //ToDo: ver el tema de como se agregaban buyers a los nodos
+  app.post('/buyers/new', async function (req, res) {
+    try {
+      res.send("Comprador agregado!");
+
+    } catch (error) {
+      res.status(400);
+      res.send("Error agregando comprador");
+    }
+  })
 }
 
+//me gusta el redirect pero no lo pude hacer andar -> F
 const redirect = function (request: any, nodeToAddBid: String) {
-    const { method, url, body, headers } = request;
-    return axios({
-        url: `http://${nodeToAddBid}${url}`, //revisar que esto sea asi
-        method: method,
-        data: body,
-        headers: headers
-    });
-}
-
-const getFromMainNodes = async (mainNodes: String[], endpoint: String) => {
-    let elementsPromises = await Promise.all(mainNodes.map(async node => await getPromiseFromNode(node, endpoint)));
-
-    let elements: any = elementsPromises.map(elementPromise => elementPromise.data);
-
-    return elements.flat();
-}
-
-const getPromiseFromNode = (node: String, endpoint: String) => {
-    return axios.get(`http://${node}/${endpoint}`);
-}
-
-const bidCount = function(bidMap: number[][]) {
-  return bidMap.reduce((total, clusterBids) => total + clusterBids.length, 0)
-}
-
-//ver si esto updatea realmente. modifica el valor de la referencia? no se, todavia no se mucho de js. lo veremos en el proximo capitulo de dragon ball z
-const addToBidMap = async function(bidmap: number[][], nextNodeId: number, clusterToAddBid: number) {
-  ++nextNodeId;
-  bidmap[clusterToAddBid].push(nextNodeId);
-}
-
-const findBidCluster = function(bidMap: number[][], bidId: number) {
-  let i = 0;
-  for(; i < bidMap.length; ++i) {
-    if (bidMap[i].includes(bidId)) break;
-  }
-
-  if (i >= bidMap.length)
-    return -1
-
-  return i + 1;
+  const { method, url, body, headers } = request;
+  return axios({
+    url: `${nodeToAddBid}${url}`,
+    method: method,
+    data: body.data,
+    headers: headers
+  });
 }

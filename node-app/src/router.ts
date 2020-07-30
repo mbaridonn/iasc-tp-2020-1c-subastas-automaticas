@@ -20,20 +20,20 @@ export const register = (app: express.Application) => {
     });
 
     app.post('/bids/new', async function (req, res) {
-        let {basePrice, hours, tags} = req.body;
-        let response = await controllers.addNewBid(basePrice, hours, tags); 
+        let {id, basePrice, hours, tags} = req.body;
+        let response = await controllers.addNewBid(id, basePrice, hours, tags); 
         res.send(response);
     });
 
-    app.post('/bids/new/offer', function (req, res) {
+    app.post('/bids/offer', function (req, res) {
         let {bidId, newPrice, buyerIp} = req.body;
         let response = controllers.processNewOffer(bidId, newPrice, buyerIp);
         res.send(response);
     });
 
-    app.post('/bids/update', function (req, res) {
-        let {_id, _basePrice, _hours, _tags} = req.body;
-        let response = controllers.updateBid(_id, _basePrice, _hours, _tags);
+    app.put('/bids', function (req, res) {
+        let { id, basePrice, hours, tags} = req.body;
+        let response = controllers.updateBid(id, basePrice, hours, tags);
         res.send(response);
     });
 
@@ -45,13 +45,13 @@ export const register = (app: express.Application) => {
     });
 
     app.post('/buyers/new', function (req, res) {
-        let {name, ip, tags} = req.body;
+        let {ip, tags, name} = req.body;
         let response = controllers.addNewBuyer(name, ip, tags);
         res.send(response);
     });
 
     app.post('/buyers/update', function (req, res) {
-        let {_name, _ip, _tags} = req.body;
+        let {_name,_ip, _tags} = req.body;
         let response = controllers.updateBuyer(_ip, _name, _tags);
         res.send(response);
     });

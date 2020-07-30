@@ -4,9 +4,9 @@ export class Buyer {
     _ip: String; 
     _tags: String[]
     constructor(name: String, ip:String, tags:String[]){
-        this._ip = ip;
-        this._tags = tags;
         this._name = name;
+        this._tags = tags;
+        this._ip = ip;
     }
 
     get name(){

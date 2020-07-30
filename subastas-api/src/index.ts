@@ -8,8 +8,6 @@ const app: express.Application = express();
 const port: number = 3000;
 let mainNodes: String[] = []; //por ahora tenemos un solo main node
 let otherNodes: String[][] = [];
-let bidMap: number[][]
-let nextNodeId = 1
 const NODE_COUNT = 3
 
 // let amountOfNodes = 0
@@ -38,7 +36,7 @@ const replaceNode = function (failedNode: any) {
     otherNodes[clusterNumber].push(failedNode);
 }
 
-router.register(app, mainNodes, otherNodes, bidMap, nextNodeId, replaceNode);
+router.register(app, mainNodes, otherNodes, replaceNode);
 
 app.listen(port, function () {
     console.log(`Server started at http://localhost:${port}`);

@@ -1,5 +1,5 @@
-import {addNewBid, getCurrentBids, updateBid, processNewOffer} from './bidsContoller'
-import {addNewBuyer, getCurrentBuyers, updateBuyer} from './buyersController'
+import { addNewBid, getCurrentBids, updateBid, processNewOffer, notifyEndOfBid, initializeBidsFromOtherNode } from './bidsContoller'
+import { addNewBuyer, getCurrentBuyers, updateBuyer, initializeBuyersFromOtherNode } from './buyersController'
 
 
 export = {
@@ -9,5 +9,8 @@ export = {
     getCurrentBuyers,
     updateBuyer,
     updateBid,
-    processNewOffer
+    processNewOffer,
+    notifyEndOfBid,
+    initializeBuyersFromOtherNode,
+    initializeBidsFromOtherNode,
 }
