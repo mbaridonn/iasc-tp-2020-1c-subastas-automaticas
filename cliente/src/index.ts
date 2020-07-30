@@ -19,7 +19,7 @@ const main = async () => {
 
     let bid = {
         basePrice: 500,
-        hours: 5,
+        hours: 60, //dura 1 minuto en memoria
         tags: [
             "books"
         ]
@@ -33,13 +33,16 @@ const main = async () => {
     let datosPosta = datos.data;
     console.log(datosPosta);
 
-    console.log("Hago una oferta");
-    let bidOffer = {
-        bidId: 1,
-        newPrice: 1000,
-        buyerIp: "cliente:8081"
-    }
-    await axios.post(`${api}/bids/offer`);
+    setTimeout(async () => {
+        console.log("Hago una oferta");
+        let bidOffer = {
+            bidId: 1,
+            newPrice: 1000,
+            buyerIp: "cliente:3000"
+        }
+        await axios.post(`${api}/bids/offer`, bidOffer);
+    }, 5000); //espero un poco porque sino rompe. La API retorna una respuesta y el nodo no termino de procesar
+
 }
 
 app.post('/execute', async (req, res) => {
