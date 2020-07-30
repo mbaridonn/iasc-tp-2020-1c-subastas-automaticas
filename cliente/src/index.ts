@@ -8,31 +8,41 @@ const port: number = 3000;
 
 app.use(bodyParser.json());
 
-// app.listen(port, function () {
-//     console.log(`Cliente started at http://localhost:${port}`);
-// });
+app.listen(port, function () {
+    console.log(`Cliente started at http://localhost:${port}`);
+});
 
 const main = async () => {
     console.log("Cliente iniciado!");
 
-    // let apiEndpoint = 'http://subastas-api:3000/bids';
+    let api = 'http://subastas-api:3000';
 
-    // let bid = {
-    //     basePrice: 500,
-    //     hours: 5,
-    //     tags: [
-    //         "books"
-    //     ]
-    // };
+    let bid = {
+        basePrice: 500,
+        hours: 5,
+        tags: [
+            "books"
+        ]
+    };
 
-    // console.log("Posteo una bid");
-    // await axios.post(apiEndpoint, bid);
+    console.log("Posteo una bid");
+    await axios.post(`${api}/bids/new/`, bid);
 
-    // console.log("Me traigo bids");
-    // let datos = await axios.get(apiEndpoint);
-    // let datosPosta = datos.data;
-    // console.log(datosPosta);
+    console.log("Me traigo bids");
+    let datos = await axios.get(`${api}/bids`);
+    let datosPosta = datos.data;
+    console.log(datosPosta);
 
+    console.log("Hago una oferta");
+    let bidOffer = {
+        bidId: 1,
+        newPrice: 1000,
+        buyerIp: "cliente:8081"
+    }
+    await axios.post(`${api}/bids/offer`);
 }
 
-main();
+app.post('/execute', async (req, res) => {
+    await main();
+    res.send("Cliente ejecutado");
+})
