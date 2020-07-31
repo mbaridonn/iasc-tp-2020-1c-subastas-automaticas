@@ -87,6 +87,8 @@ export const register = (app: express.Application, mainNodes: String[], otherNod
   //ToDo: ver el tema de como se agregaban buyers a los nodos
   app.post('/buyers/new', async function (req, res) {
     try {
+      let buyer = req.body;
+      controllers.addNewBuyer(mainNodes, buyer);
       res.send("Comprador agregado!");
 
     } catch (error) {

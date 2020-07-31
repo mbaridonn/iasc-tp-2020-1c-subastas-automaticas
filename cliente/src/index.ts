@@ -25,13 +25,17 @@ const main = async () => {
         ]
     };
 
+    let buyer = {
+        name: 'Rick',
+        ip: 'cliente:3000',
+        tags: ['books']
+    };
+
+    console.log("Me registro en el sistema");
+    await axios.post(`${api}/buyers/new`, buyer);
+
     console.log("Posteo una bid");
     await axios.post(`${api}/bids/new/`, bid);
-
-    console.log("Me traigo bids");
-    let datos = await axios.get(`${api}/bids`);
-    let datosPosta = datos.data;
-    console.log(datosPosta);
 
     setTimeout(async () => {
         console.log("Hago una oferta");
@@ -48,4 +52,10 @@ const main = async () => {
 app.post('/execute', async (req, res) => {
     await main();
     res.send("Cliente ejecutado");
+})
+
+app.post('/offerNotification', async (req, res) => {
+    let message = req.body.message;
+    console.log(message);
+    res.send("La oferta fue notificada al cliente");
 })

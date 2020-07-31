@@ -23,7 +23,7 @@ export class Notifier {
         let response = Promise.all(destinations.map(destination => {
             return this.sentNotification(`http://${destination}/${path}`, params);
         }))
-        .then(respone => { 
+        .then(respone => {
             return createJsonResponse('Notification success!', 200)})
         .catch(error => { 
             return createJsonResponse('Fallo al notificar:' + error.message, 400)});
@@ -61,11 +61,12 @@ export class BidNotifier extends Notifier {
     notifyBidToBuyers = async (bid: Bid, currentBuyers: Buyer[], message: String) => {
         let buyersToNotify = currentBuyers.filter( buyer => bid._tags.some( tag => buyer.tags.includes(tag) ))
         let buyersIp = buyersToNotify.map(buyer => buyer._ip);
-        console.log(message)  
-        // return this.notifyTo(buyersIp, '', message);                 //TODO: Descomentar cuando se implemente el destino de notificacion de los buyers
-        return 
+        console.log(message)
+        let messageToSend = {
+            message: message
+        };
+        return this.notifyTo(buyersIp, 'offerNotification', messageToSend);
     }
-    
 }
 
 export class BuyerNotifier extends Notifier {
@@ -81,4 +82,3 @@ export class BuyerNotifier extends Notifier {
     notifyToClients(){}
 
 }
-
