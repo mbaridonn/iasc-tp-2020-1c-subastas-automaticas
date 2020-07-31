@@ -7,7 +7,7 @@ import { initializeBuyersFromOtherNode } from "./controllers/buyersController"; 
 // Create a new express app instance
 const app: express.Application = express();
 const port: number = 3000;
-const otherNodes: String[] = ['subastas-node-app-1-1:3000','subastas-node-app-1-2:3000'] // llenar con otros nodos del cluster
+const otherNodes: String[] = process.env.CONTAINERS_PATH.split(",");
 
 app.use(bodyParser.json());
 

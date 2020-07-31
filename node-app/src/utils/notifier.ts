@@ -1,6 +1,7 @@
 import { createJsonResponse } from '../utils/response'
 import { Buyer } from '../models/buyers';
 import { Bid } from '../models/bids';
+import { CLIENT_RENEG_LIMIT } from 'tls';
 const axios = require('axios');
 
 export class Notifier {
@@ -10,7 +11,7 @@ export class Notifier {
     constructor() {
         //TODO: Como se quien soy? Evitar autollamarme
         //TODO: Llevar a un archivo de config?
-        this._otherContainers = ['subastas-node-app-1-1:3000', 'subastas-node-app-1-2:3000', 'subastas-node-app-1-3:3000']; 
+        this._otherContainers = process.env.CONTAINERS_PATH.split(","); 
     }
 
     notifyToContainers(params: any){}
@@ -54,7 +55,7 @@ export class BidNotifier extends Notifier {
     }
 
     notifyToContainers = (params: Bid) => {
-        return this.notifyTo(this._otherContainers, 'bids/update', params);
+        return this.notifyTo(this._otherContainers, 'bids', params);
     }
 
     notifyBidToBuyers = async (bid: Bid, currentBuyers: Buyer[], message: String) => {
@@ -73,6 +74,7 @@ export class BuyerNotifier extends Notifier {
     }
 
     notifyToContainers = (params: Buyer) => {
+        console.log("CONTAINERS", this._otherContainers)
         return this.notifyTo(this._otherContainers, 'buyers/update', params);
     }
 
