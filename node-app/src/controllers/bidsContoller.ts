@@ -50,8 +50,7 @@ export const updateBid = (id: number, basePrice?: number, hours?: number, tags?:
         return b._id == id
     });
 
-    if(bid == undefined){
-        //TODO: Revisar creacion de IDs
+    if(!bid){
         return addNewBid(id, basePrice, hours, tags, false);        
     }else{
         bid._basePrice = basePrice || bid._basePrice;

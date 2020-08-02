@@ -2,7 +2,7 @@ import express, { response } from 'express';
 import controllers from './controllers';
 import axios from 'axios'
 
-export const register = (app: express.Application, mainNodes: String[], otherNodes: String[][], replaceNode: (failedNodes: String[]) => any) => {
+export const register = (app: express.Application, mainNodes: String[]) => {
 
   app.get('/', function (req, res) {
     res.send('Hello World!');
@@ -18,7 +18,6 @@ export const register = (app: express.Application, mainNodes: String[], otherNod
     } catch (failedNode) {
       res.status(400);
       res.send("Hubo un error al cargar las subastas");
-      replaceNode(failedNode);
     }
 
   })
@@ -59,18 +58,6 @@ export const register = (app: express.Application, mainNodes: String[], otherNod
     }
   })
 
-  app.put('/bids', function (req, res) {
-    try{
-      let bid = req.body;
-      let responseMessage = controllers.updateBid(mainNodes, bid);
-      res.send(responseMessage);
-
-    }catch(error){
-      res.status(400);
-      res.send("Error al modificar la subasta");
-    }
-  })
-
   //BUYERS
 
   app.get('/buyers', async function (req, res) {
@@ -80,7 +67,6 @@ export const register = (app: express.Application, mainNodes: String[], otherNod
     } catch (failedNode) {
       res.status(400);
       res.send("Hubo un error al cargar los compradores");
-      replaceNode(failedNode);
     }
   })
 
@@ -88,10 +74,11 @@ export const register = (app: express.Application, mainNodes: String[], otherNod
   app.post('/buyers/new', async function (req, res) {
     try {
       let buyer = req.body;
-      controllers.addNewBuyer(mainNodes, buyer);
+      await controllers.addNewBuyer(mainNodes, buyer);
       res.send("Comprador agregado!");
 
     } catch (error) {
+      //TODO: HACER RETRY
       res.status(400);
       res.send("Error agregando comprador");
     }

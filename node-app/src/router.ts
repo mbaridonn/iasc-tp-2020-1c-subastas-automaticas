@@ -31,7 +31,7 @@ export const register = (app: express.Application) => {
         res.send(response);
     });
 
-    app.put('/bids', function (req, res) {
+    app.post('/bids/update', function (req, res) {
         let { id, basePrice, hours, tags} = req.body;
         let response = controllers.updateBid(id, basePrice, hours, tags);
         res.send(response);
@@ -57,8 +57,9 @@ export const register = (app: express.Application) => {
     });
 
 
-
-    app.get('/muyBienDiez', function (req, res) {
+    ////////////////////////////////////////////
+    /////////////////// PING ///////////////////
+    app.get('/ping', function (req, res) {
         res.json('MUY BIEN 10 ;)');
     });
 

@@ -9,8 +9,6 @@ export class Notifier {
     _otherContainers: String[];
 
     constructor() {
-        //TODO: Como se quien soy? Evitar autollamarme
-        //TODO: Llevar a un archivo de config?
         this._otherContainers = process.env.CONTAINERS_PATH.split(","); 
     }
 
@@ -55,7 +53,7 @@ export class BidNotifier extends Notifier {
     }
 
     notifyToContainers = (params: Bid) => {
-        return this.notifyTo(this._otherContainers, 'bids', params);
+        return this.notifyTo(this._otherContainers, 'bids/update', params);
     }
 
     notifyBidToBuyers = async (bid: Bid, currentBuyers: Buyer[], message: String) => {
@@ -75,7 +73,6 @@ export class BuyerNotifier extends Notifier {
     }
 
     notifyToContainers = (params: Buyer) => {
-        console.log("CONTAINERS", this._otherContainers)
         return this.notifyTo(this._otherContainers, 'buyers/update', params);
     }
 

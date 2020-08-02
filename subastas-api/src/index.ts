@@ -20,43 +20,53 @@ app.use(bodyParser.json());
 *************************************/
 
 const nodeClusterNumber = function(node: string) {
-  return parseInt(node.replace( /(^.+)(\w\d+\w)(.+$)/i,'$2'))
+  return parseInt(node.split("-")[3])-1;
 }
 
-const flattenedOtherNodes = function () {
-  return otherNodes.reduce((accumulator, value) => accumulator.concat(value), []);
-}
 
 const replaceNode = function (failedNode: any) {
-    const clusterNumber = nodeClusterNumber(failedNode)
-    let node = otherNodes[clusterNumber].pop();
-    let index = mainNodes.indexOf(failedNode, 0);
-    mainNodes.splice(index, 1);
-    mainNodes.push(node);
-    otherNodes[clusterNumber].push(failedNode);
+    console.log("===============================================")
+    console.log("===============================================")
+    console.log("MAIN", mainNodes)
+    console.log("OTHER", otherNodes)
+    console.log("________________________________________")
+    const clusterNumber = nodeClusterNumber(failedNode);
+    console.log("ClusterNumber", clusterNumber)
+    let node = otherNodes[clusterNumber].pop();  // 3-2
+    let index = mainNodes.indexOf(failedNode);
+    mainNodes.splice(index, 1, node); 
+    otherNodes[clusterNumber].unshift(failedNode);
+    console.log("________________________________________")
+    console.log("MAIN AFTER", mainNodes)
+    console.log("OTHER AFTER", otherNodes)
+    console.log("===============================================")
+    console.log("===============================================")
 }
 
-router.register(app, mainNodes, otherNodes, replaceNode);
+router.register(app, mainNodes);
 
 app.listen(port, function () {
     console.log(`Server started at http://localhost:${port}`);
 });
 
 const pingNodes = function () {
-    let nodes = mainNodes.concat(flattenedOtherNodes())
-    nodes.forEach(node => function () {
-        axios.get(`https://${node}/ping`).catch(err => replaceNode(node))
+    let nodes = mainNodes;
+    nodes.forEach(node => {
+        axios.get(`http://${node}/ping`).catch(err => {
+          replaceNode(node)
+        })
     })
 }
 
 const initScheduler = function () {
-    const minutes = 3
-    const interval = minutes * 60 * 1000
+    const minutes = 1
+    const interval = minutes * 1000
     setInterval(pingNodes, interval)
 }
 
 const initNodeLists = function () {
   for (let i = 1; i <= NODE_COUNT; ++i) {
+    console.log("INIT!")
     mainNodes.push(`subastas-node-app-${i}-1:3000`)
     otherNodes.push([`subastas-node-app-${i}-2:3000`,`subastas-node-app-${i}-3:3000`])
   }
