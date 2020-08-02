@@ -29,7 +29,6 @@ export const register = (app: express.Application, mainNodes: String[]) => {
       res.send("Subasta agregada!");
 
     } catch (error) {
-      console.log("ERR", error)
       res.status(400);
       res.send("Error agregando la subasta");
     }

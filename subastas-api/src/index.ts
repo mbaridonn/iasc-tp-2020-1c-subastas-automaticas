@@ -49,6 +49,7 @@ const replaceNode = function (failedNode: any) {
         mainNodes.splice(index, 1, node);
         otherNodes[clusterNumber].unshift(failedNode);
         updateNodeMainReference();
+        notifyNewMain(node);
     }
 }
 
@@ -80,6 +81,11 @@ const initNodeLists = function () {
     mainNodes.push(`subastas-node-app-${i}-1:3000`)
     otherNodes.push([`subastas-node-app-${i}-2:3000`,`subastas-node-app-${i}-3:3000`])
   }
+}
+
+
+const notifyNewMain = (node: String) => {
+  axios.post(`http://${node}/new/main`).catch(err => { return `Fallo al notificar nuevo main ${node}` })
 }
 
 initScheduler()

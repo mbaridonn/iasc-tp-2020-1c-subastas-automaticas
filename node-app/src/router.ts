@@ -33,8 +33,8 @@ export const register = (app: express.Application) => {
     });
 
     app.post('/bids/update', function (req, res) {
-        let { _id, _basePrice, _hours, _tags } = req.body;
-        let response = controllers.updateBid(_id, _basePrice, _hours, _tags);
+        let { _id, _basePrice, _hours, _tags, _started, _actualWinner } = req.body;
+        let response = controllers.updateBid(_id, _basePrice, _hours, _tags, _started, _actualWinner);
         res.send(response);
     });
 
@@ -42,6 +42,11 @@ export const register = (app: express.Application) => {
         let {id} = req.body
         controllers.closeBid(id)
         res.send(createJsonResponse(`Se cerro correctamente`, 200));
+    });
+
+    app.post('/new/main', async function (req, res) {
+        await controllers.startAllBids()
+        res.send(createJsonResponse(`Se iniciaron los bids correctamente`, 200));
     });
 
     ////////////////////////////////////////////

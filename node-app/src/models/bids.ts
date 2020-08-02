@@ -13,11 +13,17 @@ export class Bid {
     _finish: Date;
     _actualWinner: String;
     
-    constructor(id: number, basePrice: number, hours: number, tags:String[]){
+    constructor(id: number, basePrice: number, hours: number, tags:String[], started?: Date, actualWinner?: String){
         this._id = id;
         this._basePrice = basePrice;
         this._hours = hours;
         this._tags = tags;
+        if(started){
+            this._started = started;
+        }
+        if(actualWinner){
+            this._actualWinner = actualWinner;
+        }
     }
 
 
@@ -31,21 +37,32 @@ export class Bid {
                 message: `Asegurece que el valor de la oferta sea mayor que: ${this._basePrice} rupias`};;
     };
 
+    restart = (): Promise<Bid> => {
+        console.log("Reiniciando subasta: ",this._id, "previamente iniciada a las", this._started.toLocaleString());
+        this._finish = new Date(this._started);
+        this._finish.setSeconds( this._finish.getSeconds() + 5 + this._hours);
+        return this.initTimeOutBid()
+    }
 
     start = (): Promise<Bid> => {
        this._started = new Date();
        this._finish = new Date();
        this._finish.setSeconds( this._finish.getSeconds() + this._hours);
        
-       return new Promise( (resolve, reject) => {
-        console.log("Iniciando subasta: ",this._id, "a las", this._started.toLocaleString());
-        setTimeout(() => {
-            console.log("Finalizando subasta: ",this._id, "a las", this._finish.toLocaleString());
-            axios.post(`http://${API_URL}/bids/close`, { id: this._id });
-            resolve(this as Bid); 
-        },  this._finish.getTime() - this._started.getTime());
-       });
+       console.log("Iniciando subasta: ",this._id, "a las", this._started.toLocaleString());
+       return this.initTimeOutBid()
     };
+
+    private initTimeOutBid = (): Promise<Bid> => {
+        console.log("TIMEOUT", this._finish.getTime() - this._started.getTime())
+        return new Promise( (resolve, reject) => {
+            setTimeout(() => {
+                console.log("Finalizando subasta: ",this._id, "a las", this._finish.toLocaleString());
+                axios.post(`http://${API_URL}/bids/close`, { id: this._id });
+                resolve(this as Bid); 
+            },  this._finish.getTime() - this._started.getTime());
+           });
+    }
 
     
     get hours(){

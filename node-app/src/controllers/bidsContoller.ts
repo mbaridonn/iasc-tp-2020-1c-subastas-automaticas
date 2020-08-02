@@ -12,9 +12,7 @@ let mainNode: String;
 
 export const addNewBid = async (id: number, basePrice: number, hours: number, tags: String[], notifyFlag: boolean = true) => {
     let bid = new Bid(id, basePrice, hours, tags);
-    bidsList.push(bid);
     if(notifyFlag){
-        await notifyToContainers(bid);
         bid.start() //Notify end of bid
         .then(response => {
             closeBid(response._id);
@@ -25,10 +23,12 @@ export const addNewBid = async (id: number, basePrice: number, hours: number, ta
         .catch(error => {
             return createJsonResponse({message: `Fallo al finalizar la subasta: ${bid._id}`}, 400);
         });
-
+        
+        await notifyToContainers(bid);
         let currentBuyers = getCurrentBuyers();
         await notifier.notifyBidToBuyers(bid, currentBuyers, `Esta subasta podria interesarle: ${bid._id}`)   
     }
+    bidsList.push(bid);
     return createJsonResponse(bid, 200); 
 }
 
@@ -46,17 +46,20 @@ export const processNewOffer = async (bidId:number, newOffer: number, buyerIp: S
 }
 
 
-export const updateBid = (id: number, basePrice?: number, hours?: number, tags?: String[]) => {
+export const updateBid = (id: number, basePrice?: number, hours?: number, tags?: String[], started?: Date, actualWinner?: String) => {
     let bid: Bid = bidsList.find((b: Bid) => {
         return b._id == id
     });
-
     if(!bid){
-        return addNewBid(id, basePrice, hours, tags, false);        
+        let bid = new Bid(id, basePrice, hours, tags, started, actualWinner);
+        bidsList.push(bid);
+        return createJsonResponse(bid, 200);
     }else{
         bid._basePrice = basePrice || bid._basePrice;
         bid._hours = hours || bid._hours;
         bid._tags = tags || bid._tags;
+        bid._started = started || bid._started
+        bid._actualWinner = actualWinner || bid._actualWinner
     
         let index = bidsList.indexOf(bid);
         if(index > -1){
@@ -103,8 +106,11 @@ export const initializeBidsFromOtherNode =  async () => {
     const bidsResponse = await axios.get(`http://${mainNode}/bids`)
     const bids = bidsResponse.data
     if (JSON.stringify(bids) != JSON.stringify(bidsList)){
-      bidsList = []
-      bids.data.forEach((bid: Bid) => { addNewBid(bid._id, bid._basePrice, bid._hours, bid._tags, false) });
+        bidsList = []
+        bids.forEach((bid: Bid) => { 
+            let newBid = new Bid(bid._id, bid._basePrice, bid._hours, bid._tags, bid._started, bid._actualWinner);
+            bidsList.push(newBid);
+        });
     }
   }
   catch{
@@ -118,4 +124,17 @@ export const closeBid=(id: number)=>{
 
 export const updateBidMainNode = (node: String) => {
   mainNode = node;
+}
+
+export const startAllBids = async () => {
+    bidsList.forEach( bid => {
+        bid.restart()
+        .then(response => { 
+            closeBid(response._id);
+            return notifyEndOfBid(response).then(resp => {
+                return resp;
+            })
+         })
+        .catch(err => { err })
+    })
 }
