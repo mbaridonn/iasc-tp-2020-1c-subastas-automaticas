@@ -30,17 +30,19 @@ const replaceNode = function (failedNode: any) {
     console.log("MAIN", mainNodes)
     console.log("OTHER", otherNodes)
     console.log("________________________________________")
-    const clusterNumber = nodeClusterNumber(failedNode);
-    console.log("ClusterNumber", clusterNumber)
-    let node = otherNodes[clusterNumber].pop();  // 3-2
-    let index = mainNodes.indexOf(failedNode);
-    mainNodes.splice(index, 1, node); 
-    otherNodes[clusterNumber].unshift(failedNode);
-    console.log("________________________________________")
-    console.log("MAIN AFTER", mainNodes)
-    console.log("OTHER AFTER", otherNodes)
-    console.log("===============================================")
-    console.log("===============================================")
+    let index = mainNodes.indexOf(failedNode)
+    if (index != -1) {
+        const clusterNumber = nodeClusterNumber(failedNode);
+        console.log("ClusterNumber", clusterNumber)
+        let node = otherNodes[clusterNumber].pop()
+        mainNodes.splice(index, 1, node);
+        otherNodes[clusterNumber].unshift(failedNode);
+        console.log("________________________________________")
+        console.log("MAIN AFTER", mainNodes)
+        console.log("OTHER AFTER", otherNodes)
+        console.log("===============================================")
+        console.log("===============================================")
+    }
 }
 
 router.register(app, mainNodes);
