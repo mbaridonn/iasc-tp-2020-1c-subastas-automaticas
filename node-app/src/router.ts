@@ -1,5 +1,6 @@
 import controllers from './controllers';
 import express from 'express';
+import { createJsonResponse } from './utils/response';
 
 export const register = (app: express.Application) => {
 
@@ -32,9 +33,15 @@ export const register = (app: express.Application) => {
     });
 
     app.post('/bids/update', function (req, res) {
-        let { id, basePrice, hours, tags} = req.body;
-        let response = controllers.updateBid(id, basePrice, hours, tags);
+        let { _id, _basePrice, _hours, _tags } = req.body;
+        let response = controllers.updateBid(_id, _basePrice, _hours, _tags);
         res.send(response);
+    });
+
+    app.post('/bids/close', function (req, res) {
+        let {id} = req.body
+        controllers.closeBid(id)
+        res.send(createJsonResponse(`Se cerro correctamente`, 200));
     });
 
     ////////////////////////////////////////////

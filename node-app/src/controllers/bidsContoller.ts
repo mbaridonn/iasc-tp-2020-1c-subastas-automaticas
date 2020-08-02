@@ -12,11 +12,13 @@ let notifier = new BidNotifier();
 export const addNewBid = async (id: number, basePrice: number, hours: number, tags: String[], notifyFlag: boolean = true) => {
     let bid = new Bid(id, basePrice, hours, tags);
     bidsList.push(bid);
-
     if(notifyFlag){
+        console.log("PRIMERO")
         await notifyToContainers(bid);
+        console.log("TERCERO")
         bid.start() //Notify end of bid
         .then(response => {
+            closeBid(response._id);
             return notifyEndOfBid(response).then(resp => {
                 return resp;
             })
@@ -65,6 +67,7 @@ export const updateBid = (id: number, basePrice?: number, hours?: number, tags?:
 }
 
 export const notifyEndOfBid = async (bid:Bid) =>{
+    await notifier.notifyEndOfBidToContainers(bid._id);
     return await notifier.notifyBidToBuyers(bid, getCurrentBuyers(), `La subasta ${bid._id} a finalizado a las ${bid._finish.toLocaleString()}. Felicitamos al ganador: ${bid._actualWinner}!`);
 }
 
@@ -103,3 +106,7 @@ export const initializeBidsFromOtherNode =  async (node: String) => {
     console.error('No se pudieron levantar las bids')
   }
 };
+
+export const closeBid=(id: number)=>{
+    bidsList = bidsList.filter( bid => { bid._id != id } );
+}

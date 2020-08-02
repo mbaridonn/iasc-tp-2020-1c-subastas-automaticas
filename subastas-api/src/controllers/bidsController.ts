@@ -21,7 +21,6 @@ export const addNewBid = async (mainNodes: String[], bid: any) => {
 
 export const closeBid = async (bid: any) => {
     const clusterToCloseBid = findBidCluster(bidMap, bid.id)
-    console.log("closeBid")
     const index = bidMap[clusterToCloseBid].indexOf(bid.id);
     bidMap[clusterToCloseBid].splice(index, 1);
 }
@@ -55,7 +54,6 @@ const getNextNodeId = () => {
 }
 
 const nextBidCluster = function (bidMap: number[][]) {
-    console.log("nextBidCluster")
     const bidCounts = bidMap.map(bids => bids.length)
     return bidCounts.indexOf(Math.min.apply(Math, bidCounts))
 }

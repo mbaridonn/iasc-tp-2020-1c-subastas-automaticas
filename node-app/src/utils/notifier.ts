@@ -23,7 +23,7 @@ export class Notifier {
         }))
         .then(respone => {
             return createJsonResponse('Notification success!', 200)})
-        .catch(error => { 
+        .catch(error => {
             return createJsonResponse('Fallo al notificar:' + error.message, 400)});
         return response;
     }
@@ -54,6 +54,10 @@ export class BidNotifier extends Notifier {
 
     notifyToContainers = (params: Bid) => {
         return this.notifyTo(this._otherContainers, 'bids/update', params);
+    }
+
+    notifyEndOfBidToContainers = (id: number) => {
+        return this.notifyTo(this._otherContainers, 'bids/close', {"id": id});
     }
 
     notifyBidToBuyers = async (bid: Bid, currentBuyers: Buyer[], message: String) => {

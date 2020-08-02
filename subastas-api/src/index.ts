@@ -25,23 +25,12 @@ const nodeClusterNumber = function(node: string) {
 
 
 const replaceNode = function (failedNode: any) {
-    console.log("===============================================")
-    console.log("===============================================")
-    console.log("MAIN", mainNodes)
-    console.log("OTHER", otherNodes)
-    console.log("________________________________________")
     let index = mainNodes.indexOf(failedNode)
     if (index != -1) {
         const clusterNumber = nodeClusterNumber(failedNode);
-        console.log("ClusterNumber", clusterNumber)
         let node = otherNodes[clusterNumber].pop()
         mainNodes.splice(index, 1, node);
         otherNodes[clusterNumber].unshift(failedNode);
-        console.log("________________________________________")
-        console.log("MAIN AFTER", mainNodes)
-        console.log("OTHER AFTER", otherNodes)
-        console.log("===============================================")
-        console.log("===============================================")
     }
 }
 
@@ -68,7 +57,6 @@ const initScheduler = function () {
 
 const initNodeLists = function () {
   for (let i = 1; i <= NODE_COUNT; ++i) {
-    console.log("INIT!")
     mainNodes.push(`subastas-node-app-${i}-1:3000`)
     otherNodes.push([`subastas-node-app-${i}-2:3000`,`subastas-node-app-${i}-3:3000`])
   }
