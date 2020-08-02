@@ -48,6 +48,7 @@ services:
         - "3001:3000"
       environment:
         - CONTAINERS_PATH=subastas-node-app-1-2:3000,subastas-node-app-1-3:3000
+        - CONTAINER_NAME=subastas-node-app-1-1
       networks: 
         - app-node-net
     subastas-app-1-2:
@@ -63,6 +64,7 @@ services:
         - "3002:3000"
       environment:
         - CONTAINERS_PATH=subastas-node-app-1-1:3000,subastas-node-app-1-3:3000
+        - CONTAINER_NAME=subastas-node-app-1-2
       networks: 
         - app-node-net
     subastas-app-1-3:
@@ -78,6 +80,7 @@ services:
         - "3003:3000"
       environment:    
         - CONTAINERS_PATH=subastas-node-app-1-1:3000,subastas-node-app-1-2:3000
+        - CONTAINER_NAME=subastas-node-app-1-3
       networks: 
         - app-node-net
 
@@ -95,6 +98,7 @@ services:
         - "4001:3000"
       environment:
         - CONTAINERS_PATH=subastas-node-app-2-2:3000,subastas-node-app-2-3:3000
+        - CONTAINER_NAME=subastas-node-app-2-1
       networks: 
         - app-node-net-2
     subastas-app-2-2:
@@ -110,6 +114,7 @@ services:
         - "4002:3000"
       environment:
         - CONTAINERS_PATH=subastas-node-app-2-1:3000,subastas-node-app-2-3:3000
+        - CONTAINER_NAME=subastas-node-app-2-2
       networks: 
         - app-node-net-2
     subastas-app-2-3:
@@ -125,6 +130,7 @@ services:
         - "4003:3000"
       environment:
         - CONTAINERS_PATH=subastas-node-app-2-2:3000,subastas-node-app-2-1:3000
+        - CONTAINER_NAME=subastas-node-app-2-3
       networks: 
         - app-node-net-2
 
@@ -142,6 +148,7 @@ services:
         - "5001:3000"
       environment:
         - CONTAINERS_PATH=subastas-node-app-3-2:3000,subastas-node-app-3-3:3000
+        - CONTAINER_NAME=subastas-node-app-3-1
       networks: 
         - app-node-net-3
     subastas-app-3-2:
@@ -157,6 +164,7 @@ services:
         - "5002:3000"
       environment:
         - CONTAINERS_PATH=subastas-node-app-3-1:3000,subastas-node-app-3-3:3000
+        - CONTAINER_NAME=subastas-node-app-3-2
       networks: 
         - app-node-net-3
     subastas-app-3-3:
@@ -172,6 +180,7 @@ services:
         - "5003:3000"
       environment:
         - CONTAINERS_PATH=subastas-node-app-3-1:3000,subastas-node-app-3-2:3000
+        - CONTAINER_NAME=subastas-node-app-3-3
       networks: 
         - app-node-net-3
 networks: 

@@ -5,6 +5,7 @@ import axios from 'axios'
 
 let buyersList: Buyer[] = [];
 let notifier = new BuyerNotifier();
+let mainNode: String
 
 export const addNewBuyer = ( name:String, ip:String, tags:String[], notify:boolean = true ) => {
     let buyer = new Buyer( name, ip, tags )
@@ -39,12 +40,16 @@ export const updateBuyer = (ip:String, name?:String, tags?:String[]) => {
 
 export const getCurrentBuyers = () => { return buyersList};
 
-export const initializeBuyersFromOtherNode =  async (node: String) => { // es igual al de bids. alguien dijo... DEUDA TECNICA?
+export const initializeBuyersFromOtherNode =  async () => { // es igual al de bids. alguien dijo... DEUDA TECNICA?
   try {
-    const buyers = await axios.get(`http://${node}/buyers`)
+    const buyers = await axios.get(`http://${mainNode}/buyers`)
     buyers.data.forEach((buyer: Buyer) => { addNewBuyer(buyer._name, buyer._ip, buyer._tags, false) });
   }
   catch{
     console.error('No se pudieron levantar los buyers')
   }
 };
+
+export const updateBuyerMainNode = (node: String) => {
+  mainNode = node;
+}

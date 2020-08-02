@@ -70,4 +70,9 @@ export const register = (app: express.Application) => {
         res.json('MUY BIEN 10 ;)');
     });
 
+    app.post('/update_network_state', function (req, res) {
+        controllers.updateBidMainNode(req.body.main);
+        controllers.updateBuyerMainNode(req.body.main);
+    });
+
 }

@@ -6,7 +6,7 @@ import axios from 'axios'
 // Create a new express app instance
 const app: express.Application = express();
 const port: number = 3000;
-let mainNodes: String[] = []; //por ahora tenemos un solo main node
+let mainNodes: String[] = [];
 let otherNodes: String[][] = [];
 const NODE_COUNT = 3
 
@@ -19,10 +19,27 @@ app.use(bodyParser.json());
             Muy Bien 10
 *************************************/
 
-const nodeClusterNumber = function(node: string) {
+const nodeClusterNumber = function(node: String) {
   return parseInt(node.split("-")[3])-1;
 }
 
+const flattenedOtherNodes = function () {
+  return otherNodes.reduce((accumulator, value) => accumulator.concat(value), []);
+}
+
+const updateNodeMainReference = function() {
+  let nodes = mainNodes.concat(flattenedOtherNodes())
+  nodes.forEach((node: String) => updateNetworkState(node))
+}
+
+const updateNetworkState = function(node: String){
+  try {
+    axios.post(`http://${node}/update_network_state`, { main: mainNodes[nodeClusterNumber(node)] })
+  }
+  catch {
+    console.error(`No se pudo actualizar a ${node}`)
+  }
+}
 
 const replaceNode = function (failedNode: any) {
     let index = mainNodes.indexOf(failedNode)
@@ -31,6 +48,7 @@ const replaceNode = function (failedNode: any) {
         let node = otherNodes[clusterNumber].pop()
         mainNodes.splice(index, 1, node);
         otherNodes[clusterNumber].unshift(failedNode);
+        updateNodeMainReference();
     }
 }
 
@@ -54,6 +72,7 @@ const initScheduler = function () {
     const minutes = 1
     const interval = minutes * 1000
     setInterval(pingNodes, interval)
+    setInterval(updateNodeMainReference, interval)
 }
 
 const initNodeLists = function () {

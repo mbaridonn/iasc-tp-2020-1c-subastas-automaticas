@@ -84,6 +84,19 @@ export const register = (app: express.Application, mainNodes: String[]) => {
       res.send("Error agregando comprador");
     }
   })
+
+  app.get('/main_nodes', async function (req, res) {
+    try {
+      let node = req.body;
+      const clusterNumber = parseInt(node.split("-")[3])-1;
+      await axios.post(`http://${node}/update_network_state`, mainNodes[clusterNumber]);
+      res.send("informacion enviada");
+
+    } catch (error) {
+      res.status(400);
+      res.send("Error enviando informacion de nodos");
+    }
+  })
 }
 
 //me gusta el redirect pero no lo pude hacer andar -> F

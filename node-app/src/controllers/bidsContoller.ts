@@ -7,6 +7,7 @@ import axios from 'axios'
 
 let bidsList: Bid[] = [];
 let notifier = new BidNotifier();
+let mainNode: String;
 
 
 export const addNewBid = async (id: number, basePrice: number, hours: number, tags: String[], notifyFlag: boolean = true) => {
@@ -97,10 +98,14 @@ export const getBidById = (bidId: number) => {
     return bidsList.find(bid => bid._id == bidId);
 };
 
-export const initializeBidsFromOtherNode =  async (node: String) => {
+export const initializeBidsFromOtherNode =  async () => {
   try {
-    const bids = await axios.get(`http://${node}/bids`)
-    bids.data.forEach((bid: Bid) => { addNewBid(bid._id, bid._basePrice, bid._hours, bid._tags, false) });
+    const bidsResponse = await axios.get(`http://${mainNode}/bids`)
+    const bids = bidsResponse.data
+    if (JSON.stringify(bids) != JSON.stringify(bidsList)){
+      bidsList = []
+      bids.data.forEach((bid: Bid) => { addNewBid(bid._id, bid._basePrice, bid._hours, bid._tags, false) });
+    }
   }
   catch{
     console.error('No se pudieron levantar las bids')
@@ -109,4 +114,8 @@ export const initializeBidsFromOtherNode =  async (node: String) => {
 
 export const closeBid=(id: number)=>{
     bidsList = bidsList.filter( bid => { bid._id != id } );
+}
+
+export const updateBidMainNode = (node: String) => {
+  mainNode = node;
 }
