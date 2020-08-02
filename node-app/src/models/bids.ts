@@ -11,7 +11,7 @@ export class Bid {
     _id: number;
     _started: Date;
     _finish: Date;
-    _actualWinner: Buyer;
+    _actualWinner: String;
     
     constructor(id: number, basePrice: number, hours: number, tags:String[]){
         this._id = id;
@@ -21,8 +21,9 @@ export class Bid {
     }
 
 
-    processOffer = (newOffer: number) => {
+    processOffer = (buyerIp: String, newOffer: number) => {
         if(this._basePrice < newOffer){
+            this._actualWinner = buyerIp;
             return {success: true, 
                     message: `El nuevo precio de la subasta ${this._id} es de: ${newOffer} rupias`};
         }

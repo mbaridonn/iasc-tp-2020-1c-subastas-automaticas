@@ -13,9 +13,7 @@ export const addNewBid = async (id: number, basePrice: number, hours: number, ta
     let bid = new Bid(id, basePrice, hours, tags);
     bidsList.push(bid);
     if(notifyFlag){
-        console.log("PRIMERO")
         await notifyToContainers(bid);
-        console.log("TERCERO")
         bid.start() //Notify end of bid
         .then(response => {
             closeBid(response._id);
@@ -28,7 +26,7 @@ export const addNewBid = async (id: number, basePrice: number, hours: number, ta
         });
 
         let currentBuyers = getCurrentBuyers();
-        let asd = await notifier.notifyBidToBuyers(bid, currentBuyers, `Esta subasta podria interesarle: ${bid._id}`)   
+        await notifier.notifyBidToBuyers(bid, currentBuyers, `Esta subasta podria interesarle: ${bid._id}`)   
     }
     return createJsonResponse(bid, 200); 
 }
@@ -36,7 +34,7 @@ export const addNewBid = async (id: number, basePrice: number, hours: number, ta
 
 export const processNewOffer = async (bidId:number, newOffer: number, buyerIp: String) => {
     let bid = getBidById(bidId);
-    let processedBid = await bid.processOffer(newOffer);
+    let processedBid = await bid.processOffer(buyerIp, newOffer);
     if(processedBid.success){
         let currentBuyers = getCurrentBuyers();
         await notifier.notifyBidToBuyers(bid, currentBuyers, processedBid.message)
@@ -60,9 +58,11 @@ export const updateBid = (id: number, basePrice?: number, hours?: number, tags?:
         bid._tags = tags || bid._tags;
     
         let index = bidsList.indexOf(bid);
-        bidsList[index] = bid;
-
-        return createJsonResponse(bid, 200)
+        if(index > -1){
+            bidsList[index] = bid;
+            return createJsonResponse(bid, 200)
+        }
+        return createJsonResponse(`Fallo al actualizar Bid: ${bid._id}`, 400)
     }
 }
 

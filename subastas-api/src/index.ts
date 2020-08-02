@@ -42,6 +42,7 @@ app.listen(port, function () {
 
 const pingNodes = function () {
     let nodes = mainNodes;
+    
     nodes.forEach(node => {
         axios.get(`http://${node}/ping`).catch(err => {
           replaceNode(node)

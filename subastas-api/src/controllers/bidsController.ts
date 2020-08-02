@@ -12,23 +12,28 @@ export const addNewBid = async (mainNodes: String[], bid: any) => {
     const clusterToAddBid = nextBidCluster(bidMap)
     const nodeToAddBid = mainNodes[clusterToAddBid]
     bidId++;
-    bid.id = bidId;
-
-    await axios.post(`http://${nodeToAddBid}/bids/new`, bid);
-
-    addToBidMap(bidMap, bid.id, clusterToAddBid);
+    addToBidMap(bidId, clusterToAddBid);
+    axios.post(`http://${nodeToAddBid}/bids/new`, { id: bidId, ...bid})
+    .then(respose => {
+        return "Se agrego el bid correctamente."
+    })
+    .catch(err => {
+        return "Fallo al agregar BidPam"+err.message
+    });
 }
 
 export const closeBid = async (bid: any) => {
-    const clusterToCloseBid = findBidCluster(bidMap, bid.id)
+    const clusterToCloseBid = findBidCluster(bid.id)
     const index = bidMap[clusterToCloseBid].indexOf(bid.id);
-    bidMap[clusterToCloseBid].splice(index, 1);
+    if(index > -1){
+        bidMap[clusterToCloseBid].splice(index, 1);
+    }
 }
 
 export const updateBid = async (mainNodes: String[], bid: any) => {
     let responseMessage = "";
 
-    const clusterToUpdateBid = findBidCluster(bidMap, bid.id);
+    const clusterToUpdateBid = findBidCluster(bid.id);
     if (clusterToUpdateBid == -1) {
         responseMessage = "No existe la subasta!";
     } else {
@@ -41,9 +46,15 @@ export const updateBid = async (mainNodes: String[], bid: any) => {
 }
 
 export const addNewBidOffer = async (mainNodes: String[], offer: any) => {
-    const clusterToAddBidOffer = findBidCluster(bidMap, offer.bidId)
-    const nodeToAddBidOffer = mainNodes[clusterToAddBidOffer]
-    await axios.post(`http://${nodeToAddBidOffer}/bids/offer`, offer);
+    let response;
+    const clusterToAddBidOffer = findBidCluster(offer.id)
+    if(clusterToAddBidOffer > -1){
+        const nodeToAddBidOffer = mainNodes[clusterToAddBidOffer]
+        response = await axios.post(`http://${nodeToAddBidOffer}/bids/offer`, offer).then(resp => { return resp }).catch(err => { return err });
+    }else{
+        response = "No existe la subasta!"
+    }
+    return response;
 }
 
 const getNextNodeId = () => {
@@ -58,11 +69,11 @@ const nextBidCluster = function (bidMap: number[][]) {
     return bidCounts.indexOf(Math.min.apply(Math, bidCounts))
 }
 
-const addToBidMap = async function (bidmap: number[][], bidId: number, clusterToAddBid: number) {
-    bidmap[clusterToAddBid].push(bidId);
+const addToBidMap = async function (bidId: number, clusterToAddBid: number) {
+    bidMap[clusterToAddBid].push(bidId);
 }
 
-const findBidCluster = function (bidMap: number[][], bidId: number) {
+const findBidCluster = function (bidId: number) {
     let i = 0;
     for (; i < bidMap.length; ++i) {
         if (bidMap[i].includes(bidId)) break;

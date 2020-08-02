@@ -28,9 +28,11 @@ export const updateBuyer = (ip:String, name?:String, tags?:String[]) => {
         buyer._tags = tags || buyer._tags;
 
         let index = buyersList.indexOf(buyer);
-        buyersList[index] = buyer;
-        
-        return createJsonResponse(buyer, 200)
+        if(index > 1){
+          buyersList[index] = buyer;
+          return createJsonResponse(buyer, 200)
+        }
+        return createJsonResponse(`Fallo al actualizar Buyer: ${buyer._ip}`, 400)
     }
 
 }

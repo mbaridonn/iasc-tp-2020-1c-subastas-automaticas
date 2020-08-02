@@ -27,8 +27,8 @@ export const register = (app: express.Application) => {
     });
 
     app.post('/bids/offer', function (req, res) {
-        let {bidId, newPrice, buyerIp} = req.body;
-        let response = controllers.processNewOffer(bidId, newPrice, buyerIp);
+        let {id, newPrice, buyerIp} = req.body;
+        let response = controllers.processNewOffer(id, newPrice, buyerIp);
         res.send(response);
     });
 
