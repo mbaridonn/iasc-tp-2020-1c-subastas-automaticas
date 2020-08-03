@@ -42,8 +42,12 @@ export const getCurrentBuyers = () => { return buyersList};
 
 export const initializeBuyersFromOtherNode =  async () => { // es igual al de bids. alguien dijo... DEUDA TECNICA?
   try {
-    const buyers = await axios.get(`http://${mainNode}/buyers`)
-    buyers.data.forEach((buyer: Buyer) => { addNewBuyer(buyer._name, buyer._ip, buyer._tags, false) });
+    const buyersResponse = await axios.get(`http://${mainNode}/buyers`)
+    const buyers = buyersResponse.data
+    if (JSON.stringify(buyers) != JSON.stringify(buyersList)){
+      buyersList = []
+      buyers.forEach((buyer: Buyer) => { addNewBuyer(buyer._name, buyer._ip, buyer._tags, false) });
+    }
   }
   catch{
     console.error('No se pudieron levantar los buyers')

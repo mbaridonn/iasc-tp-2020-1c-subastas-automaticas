@@ -70,8 +70,8 @@ const pingNodes = function () {
 const initScheduler = function () {
     const minutes = 3
     const interval = minutes * 1000
-    // setInterval(pingNodes, interval)
-    // setInterval(updateNodeMainReference, interval)
+    setInterval(pingNodes, interval)
+    setInterval(updateNodeMainReference, interval)
 }
 
 const initNodeLists = function () {
