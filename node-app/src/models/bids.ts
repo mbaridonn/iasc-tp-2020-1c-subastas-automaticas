@@ -8,12 +8,12 @@ export class Bid {
     _basePrice: number;
     _hours: number;
     _tags: String[];
-    _id: number;
+    _id: string;
     _started: Date;
     _finish: Date;
-    _actualWinner: String;
+    _currentWinner: String;
     
-    constructor(id: number, basePrice: number, hours: number, tags:String[], started?: Date, actualWinner?: String){
+    constructor(id: string, basePrice: number, hours: number, tags:String[], started?: Date, currentWinner?: String){
         this._id = id;
         this._basePrice = basePrice;
         this._hours = hours;
@@ -21,15 +21,15 @@ export class Bid {
         if(started){
             this._started = started;
         }
-        if(actualWinner){
-            this._actualWinner = actualWinner;
+        if(currentWinner){
+            this._currentWinner = currentWinner;
         }
     }
 
 
     processOffer = (buyerIp: String, newOffer: number) => {
         if(this._basePrice < newOffer){
-            this._actualWinner = buyerIp
+            this._currentWinner = buyerIp
             this._basePrice = newOffer
             return {success: true, 
                     message: `El nuevo precio de la subasta ${this._id} es de: ${this._basePrice} rupias`};

@@ -33,8 +33,8 @@ export const register = (app: express.Application) => {
     });
 
     app.post('/bids/update', function (req, res) {
-        let { _id, _basePrice, _hours, _tags, _started, _actualWinner } = req.body;
-        let response = controllers.updateBid(_id, _basePrice, _hours, _tags, _started, _actualWinner);
+        let { _id, _basePrice, _hours, _tags, _started, _currentWinner } = req.body;
+        let response = controllers.updateBid(_id, _basePrice, _hours, _tags, _started, _currentWinner);
         res.send(response);
     });
 

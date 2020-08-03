@@ -1,8 +1,10 @@
 import {getFromMainNodes, getFromMainNodesByNodes} from '../utils/nodes';
 import axios from 'axios'
+import {hashCode} from "../utils/hash";
 
-let bidMap: number[][] = [[], [], []];
+let bidMap: string[][] = [[], [], []];
 let bidId: number = 0;
+let uniqueHostname: string = hashCode(`${process.env.hostname}-${new Date().getTime()}`)
 
 export const getAllBidsFromNodes = async (mainNodes: String[]) => {
     return await getFromMainNodes(mainNodes, "bids");
@@ -12,8 +14,9 @@ export const addNewBid = async (mainNodes: String[], bid: any) => {
     const clusterToAddBid = nextBidCluster(bidMap)
     const nodeToAddBid = mainNodes[clusterToAddBid]
     bidId++;
-    addToBidMap(bidId, clusterToAddBid);
-    axios.post(`http://${nodeToAddBid}/bids/new`, { id: bidId, ...bid})
+    const bidIdString = `${uniqueHostname}-${bidId}`
+    addToBidMap(bidIdString, clusterToAddBid);
+    axios.post(`http://${nodeToAddBid}/bids/new`, { id: bidIdString, ...bid})
     .then(respose => {
         return "Se agrego el bid correctamente."
     })
@@ -59,12 +62,12 @@ const getNextNodeId = () => {
     return bidsTotal;
 }
 
-const nextBidCluster = function (bidMap: number[][]) {
+const nextBidCluster = function (bidMap: string[][]) {
     const bidCounts = bidMap.map(bids => bids.length)
     return bidCounts.indexOf(Math.min.apply(Math, bidCounts))
 }
 
-const addToBidMap = async function (bidId: number, clusterToAddBid: number) {
+const addToBidMap = async function (bidId: string, clusterToAddBid: number) {
     bidMap[clusterToAddBid].push(bidId);
 }
 
@@ -77,7 +80,7 @@ export const updateBidMap = async (mainNodes: String[]) => {
     }
 }
 
-const findBidClusterR = async function (mainNodes: String[], bidId: number, update: boolean): Promise<number> {
+const findBidClusterR = async function (mainNodes: String[], bidId: string, update: boolean): Promise<number> {
     let i = 0;
     for (; i < bidMap.length; ++i) {
         if (bidMap[i].includes(bidId)) break;
@@ -94,6 +97,6 @@ const findBidClusterR = async function (mainNodes: String[], bidId: number, upda
     return i;
 }
 
-const findBidCluster = async function (mainNodes: String[], bidId: number) {
+const findBidCluster = async function (mainNodes: String[], bidId: string) {
     return await findBidClusterR(mainNodes, bidId, true)
 }

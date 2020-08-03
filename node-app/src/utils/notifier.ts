@@ -56,7 +56,7 @@ export class BidNotifier extends Notifier {
         return this.notifyTo(this._otherContainers, 'bids/update', params);
     }
 
-    notifyEndOfBidToContainers = (id: number) => {
+    notifyEndOfBidToContainers = (id: string) => {
         return this.notifyTo(this._otherContainers, 'bids/close', {"id": id});
     }
 
