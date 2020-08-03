@@ -37,8 +37,8 @@ export const register = (app: express.Application, mainNodes: String[]) => {
   app.post('/bids/offer', async function (req, res) {
     try {
       let offer = req.body
-      await controllers.addNewBidOffer(mainNodes, offer);
-      res.send("Oferta Procesada");
+      let resp = await controllers.addNewBidOffer(mainNodes, offer);
+      res.send(resp.message);
 
     } catch (error) {
       res.status(400);

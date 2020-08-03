@@ -3,17 +3,62 @@ version: '3'
 services:
 
 #CLIENTE
-    cliente:
+    cliente-1:
       build:
           dockerfile: Dockerfile
           context: ./cliente
-      container_name: 'cliente'
+      container_name: 'cliente-1'
       restart: always
       volumes:
         - /app/node_modules
         - ./cliente:/app
       ports:
         - "8081:3000"
+      networks: 
+        - app-node-net
+
+#CLIENTE 2
+    cliente-2:
+      build:
+          dockerfile: Dockerfile
+          context: ./cliente
+      container_name: 'cliente-2'
+      restart: always
+      volumes:
+        - /app/node_modules
+        - ./cliente:/app
+      ports:
+        - "8082:3000"
+      networks: 
+        - app-node-net  
+        
+#CLIENTE 3
+    cliente-3:
+      build:
+          dockerfile: Dockerfile
+          context: ./cliente
+      container_name: 'cliente-3'
+      restart: always
+      volumes:
+        - /app/node_modules
+        - ./cliente:/app
+      ports:
+        - "8083:3000"
+      networks: 
+        - app-node-net
+
+#BUYER 3
+    vendedor:
+      build:
+          dockerfile: Dockerfile
+          context: ./cliente
+      container_name: 'vendedor'
+      restart: always
+      volumes:
+        - /app/node_modules
+        - ./cliente:/app
+      ports:
+        - "8084:3000"
       networks: 
         - app-node-net
 
@@ -31,8 +76,6 @@ services:
         - "8080:3000"
       networks: 
         - app-node-net
-        - app-node-net-2
-        - app-node-net-3
 
 #SUBASTAS 1
     subastas-app-1:
@@ -100,7 +143,7 @@ services:
         - CONTAINERS_PATH=subastas-node-app-2-2:3000,subastas-node-app-2-3:3000
         - CONTAINER_NAME=subastas-node-app-2-1
       networks: 
-        - app-node-net-2
+        - app-node-net
     subastas-app-2-2:
       build: 
         dockerfile: Dockerfile
@@ -116,7 +159,7 @@ services:
         - CONTAINERS_PATH=subastas-node-app-2-1:3000,subastas-node-app-2-3:3000
         - CONTAINER_NAME=subastas-node-app-2-2
       networks: 
-        - app-node-net-2
+        - app-node-net
     subastas-app-2-3:
       build: 
         dockerfile: Dockerfile
@@ -132,7 +175,7 @@ services:
         - CONTAINERS_PATH=subastas-node-app-2-2:3000,subastas-node-app-2-1:3000
         - CONTAINER_NAME=subastas-node-app-2-3
       networks: 
-        - app-node-net-2
+        - app-node-net
 
 #SUBASTAS 3
     subastas-app-3-1:
@@ -150,7 +193,7 @@ services:
         - CONTAINERS_PATH=subastas-node-app-3-2:3000,subastas-node-app-3-3:3000
         - CONTAINER_NAME=subastas-node-app-3-1
       networks: 
-        - app-node-net-3
+        - app-node-net
     subastas-app-3-2:
       build: 
         dockerfile: Dockerfile
@@ -166,7 +209,7 @@ services:
         - CONTAINERS_PATH=subastas-node-app-3-1:3000,subastas-node-app-3-3:3000
         - CONTAINER_NAME=subastas-node-app-3-2
       networks: 
-        - app-node-net-3
+        - app-node-net
     subastas-app-3-3:
       build: 
         dockerfile: Dockerfile
@@ -182,11 +225,8 @@ services:
         - CONTAINERS_PATH=subastas-node-app-3-1:3000,subastas-node-app-3-2:3000
         - CONTAINER_NAME=subastas-node-app-3-3
       networks: 
-        - app-node-net-3
+        - app-node-net
 networks: 
   app-node-net:
     driver: 'bridge'
-  app-node-net-2:
-    driver: 'bridge'
-  app-node-net-3:
-    driver: 'bridge'
+
