@@ -33,12 +33,10 @@ const updateNodeMainReference = function() {
 }
 
 const updateNetworkState = function(node: String){
-  try {
     axios.post(`http://${node}/update_network_state`, { main: mainNodes[nodeClusterNumber(node)] })
-  }
-  catch {
-    console.error(`No se pudo actualizar a ${node}`)
-  }
+    .catch( err => {
+      // console.error(`No se pudo actualizar a ${node}`)
+    })
 }
 
 const replaceNode = function (failedNode: any) {
@@ -70,10 +68,10 @@ const pingNodes = function () {
 }
 
 const initScheduler = function () {
-    const minutes = 1
+    const minutes = 3
     const interval = minutes * 1000
-    setInterval(pingNodes, interval)
-    setInterval(updateNodeMainReference, interval)
+    // setInterval(pingNodes, interval)
+    // setInterval(updateNodeMainReference, interval)
 }
 
 const initNodeLists = function () {
