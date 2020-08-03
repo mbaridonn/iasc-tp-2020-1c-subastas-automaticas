@@ -29,12 +29,13 @@ export class Bid {
 
     processOffer = (buyerIp: String, newOffer: number) => {
         if(this._basePrice < newOffer){
-            this._actualWinner = buyerIp;
+            this._actualWinner = buyerIp
+            this._basePrice = newOffer
             return {success: true, 
-                    message: `El nuevo precio de la subasta ${this._id} es de: ${newOffer} rupias`};
+                    message: `El nuevo precio de la subasta ${this._id} es de: ${this._basePrice} rupias`};
         }
-        return {success: true, 
-                message: `Asegurece que el valor de la oferta sea mayor que: ${this._basePrice} rupias`};;
+        return {success: false,
+                message: `Asegurese que el valor de la oferta sea mayor que: ${this._basePrice} rupias`};;
     };
 
     restart = (): Promise<Bid> => {
