@@ -1,4 +1,4 @@
-import { getFromMainNodes } from '../utils/nodes';
+import {getFromMainNodes, getFromMainNodesByNodes} from '../utils/nodes';
 import axios from 'axios'
 
 let bidMap: number[][] = [[], [], []];
@@ -22,8 +22,8 @@ export const addNewBid = async (mainNodes: String[], bid: any) => {
     });
 }
 
-export const closeBid = async (bid: any) => {
-    const clusterToCloseBid = findBidCluster(bid.id)
+export const closeBid = async (mainNodes: String[], bid: any) => {
+    const clusterToCloseBid = await findBidCluster(mainNodes, bid.id)
     const index = bidMap[clusterToCloseBid].indexOf(bid.id);
     if(index > -1){
         bidMap[clusterToCloseBid].splice(index, 1);
@@ -31,30 +31,25 @@ export const closeBid = async (bid: any) => {
 }
 
 export const updateBid = async (mainNodes: String[], bid: any) => {
-    let responseMessage = "";
-
-    const clusterToUpdateBid = findBidCluster(bid.id);
-    if (clusterToUpdateBid == -1) {
-        responseMessage = "No existe la subasta!";
-    } else {
+    try {
+        const clusterToUpdateBid = await findBidCluster(mainNodes, bid.id);
         const bidNode = mainNodes[clusterToUpdateBid];
         await axios.put(`http://${bidNode}/bids`, bid);
-        responseMessage = "Subasta modificada!";
+        return "Subasta modificada!";
+    } catch (e) {
+        return Promise.reject(e)
     }
-
-    return responseMessage;
 }
 
 export const addNewBidOffer = async (mainNodes: String[], offer: any) => {
-    let response;
-    const clusterToAddBidOffer = findBidCluster(offer.id)
-    if(clusterToAddBidOffer > -1){
+    try {
+    const clusterToAddBidOffer = await findBidCluster(mainNodes, offer.id)
         const nodeToAddBidOffer = mainNodes[clusterToAddBidOffer]
-        response = await axios.post(`http://${nodeToAddBidOffer}/bids/offer`, offer).then(resp => { return resp }).catch(err => { return err });
-    }else{
-        response = "No existe la subasta!"
+        return await axios.post(`http://${nodeToAddBidOffer}/bids/offer`, offer).then(resp => { return resp }).catch(err => { return err });
     }
-    return response;
+    catch (e) {
+        return Promise.reject(e)
+    }
 }
 
 const getNextNodeId = () => {
@@ -73,14 +68,32 @@ const addToBidMap = async function (bidId: number, clusterToAddBid: number) {
     bidMap[clusterToAddBid].push(bidId);
 }
 
-const findBidCluster = function (bidId: number) {
+export const updateBidMap = async (mainNodes: String[]) => {
+    try {
+        let bidsByNodes = await getFromMainNodesByNodes(mainNodes, "bids")
+        bidMap = bidsByNodes.map((l: { _id: number; }[]) => l.map(bid => bid._id))
+    } catch (e) {
+        return Promise.reject(e)
+    }
+}
+
+const findBidClusterR = async function (mainNodes: String[], bidId: number, update: boolean): Promise<number> {
     let i = 0;
     for (; i < bidMap.length; ++i) {
         if (bidMap[i].includes(bidId)) break;
     }
 
-    if (i >= bidMap.length)
-        return -1
+    if (i >= bidMap.length) {
+        if (update) {
+            await updateBidMap(mainNodes)
+            return findBidClusterR(mainNodes, bidId, false)
+        }
+        return Promise.reject("No existe la subasta")
+    }
 
     return i;
+}
+
+const findBidCluster = async function (mainNodes: String[], bidId: number) {
+    return await findBidClusterR(mainNodes, bidId, true)
 }

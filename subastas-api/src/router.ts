@@ -37,19 +37,19 @@ export const register = (app: express.Application, mainNodes: String[]) => {
   app.post('/bids/offer', async function (req, res) {
     try {
       let offer = req.body
-      controllers.addNewBidOffer(mainNodes, offer);
+      await controllers.addNewBidOffer(mainNodes, offer);
       res.send("Oferta Procesada");
 
     } catch (error) {
       res.status(400);
-      res.send("Error enviando la oferta" + error);
+      res.send("Error enviando la oferta " + error);
     }
   })
 
-  app.post('/bids/close', function (req, res) {
+  app.post('/bids/close', async function (req, res) {
     try{
       let bid = req.body;
-      controllers.closeBid(bid);
+      await controllers.closeBid(mainNodes,bid);
       res.send('Subasta terminada');
 
     } catch(error){
