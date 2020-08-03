@@ -55,13 +55,13 @@ export class Bid {
     };
 
     private initTimeOutBid = (): Promise<Bid> => {
-        console.log("TIMEOUT", this._finish.getTime() - this._started.getTime())
+        console.log("TIMEOUT", this._finish.getTime() - new Date().getTime())
         return new Promise( (resolve, reject) => {
             setTimeout(() => {
                 console.log("Finalizando subasta: ",this._id, "a las", this._finish.toLocaleString());
                 axios.post(`http://${API_URL}/bids/close`, { id: this._id });
                 resolve(this as Bid); 
-            },  this._finish.getTime() - this._started.getTime());
+            },  this._finish.getTime() - new Date().getTime());
            });
     }
 
