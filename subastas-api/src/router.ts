@@ -70,6 +70,18 @@ export const register = (app: express.Application, mainNodes: String[]) => {
     }
   })
 
+  app.post('/notify/bids/new', function (req, res) {
+    let bid = req.body;
+    let response = controllers.notifyNewBid(mainNodes,bid);
+    res.send(response);
+  });
+
+  app.post('/notify/bids/cancel', function (req, res) {
+    let bid = req.body;
+    let response = controllers.notifyCancelBid(mainNodes,bid);
+    res.send(response);
+  });
+
   //BUYERS
 
   app.get('/buyers', async function (req, res) {

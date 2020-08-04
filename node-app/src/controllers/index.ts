@@ -1,5 +1,18 @@
 
-import { addNewBid, getCurrentBids, updateBid, processNewOffer, startAllBids, notifyEndOfBid, closeBid, initializeBidsFromOtherNode, updateBidMainNode, cancelBid } from './bidsContoller'
+import {
+    addNewBid,
+    getCurrentBids,
+    updateBid,
+    processNewOffer,
+    startAllBids,
+    closeBid,
+    initializeBidsFromOtherNode,
+    updateBidMainNode,
+    cancelBid,
+    notifyNewBidToBuyers,
+    notifyCancelBidToBuyers,
+    notifyEndOfBidToBuyers
+} from './bidsContoller'
 import { addNewBuyer, getCurrentBuyers, updateBuyer, initializeBuyersFromOtherNode, updateBuyerMainNode } from './buyersController'
 
 
@@ -12,12 +25,14 @@ export = {
     updateBuyer,
     updateBid,
     processNewOffer,
-    notifyEndOfBid,
     initializeBuyersFromOtherNode,
     initializeBidsFromOtherNode,
     closeBid,
     updateBidMainNode,
     updateBuyerMainNode,
     startAllBids,
-    cancelBid
+    cancelBid,
+    notifyCancelBidToBuyers,
+    notifyEndOfBidToBuyers,
+    notifyNewBidToBuyers
 }

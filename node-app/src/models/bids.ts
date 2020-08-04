@@ -12,7 +12,7 @@ export class Bid {
     _started: Date;
     _finish: Date;
     _currentWinner: String;
-    
+
     constructor(id: string, basePrice: number, hours: number, tags:String[], started?: Date, currentWinner?: String){
         this._id = id;
         this._basePrice = basePrice;
@@ -38,30 +38,37 @@ export class Bid {
                 message: `Asegurese que el valor de la oferta sea mayor que: ${this._basePrice} rupias`};;
     };
 
-    restart = (): Promise<Bid> => {
+    restart = (bidsList:Bid[]): Promise<Bid> => {
         console.log("Reiniciando subasta: ",this._id, "previamente iniciada a las", this._started.toLocaleString());
         this._finish = new Date(this._started);
         this._finish.setSeconds( this._finish.getSeconds() + 5 + this._hours);
-        return this.initTimeOutBid()
+        return this.initTimeOutBid(bidsList)
     }
 
-    start = (): Promise<Bid> => {
+    start = (bidsList:Bid[]): Promise<Bid> => {
        this._started = new Date();
        this._finish = new Date();
        this._finish.setSeconds( this._finish.getSeconds() + this._hours);
        
        console.log("Iniciando subasta: ",this._id, "a las", this._started.toLocaleString());
-       return this.initTimeOutBid()
+       return this.initTimeOutBid(bidsList)
     };
 
-    private initTimeOutBid = (): Promise<Bid> => {
-        return new Promise( (resolve, reject) => {
+    private initTimeOutBid = (bidsList: Bid[]): Promise<Bid> => {
+        return new Promise((resolve, reject) => {
             setTimeout(() => {
-                console.log("Finalizando subasta: ",this._id, "a las", this._finish.toLocaleString());
-                axios.post(`http://${API_URL}/bids/close`, { id: this._id });
-                resolve(this as Bid); 
-            },  this._finish.getTime() - new Date().getTime());
-           });
+                if (bidsList.includes(this)) {
+                    console.log("Finalizando subasta: ", this._id, "a las", this._finish.toLocaleString());
+                    axios.post(`http://${API_URL}/bids/close`, {
+                        id: this._id,
+                        tags: this._tags,
+                        finish: this._finish,
+                        currentWinner: this._currentWinner
+                    }).catch(console.log);
+                    resolve(this as Bid);
+                }
+            }, this._finish.getTime() - new Date().getTime());
+        });
     }
 
     

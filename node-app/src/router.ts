@@ -1,6 +1,7 @@
 import controllers from './controllers';
 import express from 'express';
 import { createJsonResponse } from './utils/response';
+import {Bid} from "./models/bids";
 
 export const register = (app: express.Application) => {
 
@@ -74,6 +75,27 @@ export const register = (app: express.Application) => {
         res.send(response);
     });
 
+
+    ////////////////////////////////////////////
+    /////////////////// NOTIFY /////////////////
+
+    app.post('/notify/bids/cancel', function (req, res) {
+        let { id, tags} = req.body;
+        let response = controllers.notifyCancelBidToBuyers(id, tags).catch(console.log);
+        res.send(response);
+    });
+
+    app.post('/notify/bids/close', function (req, res) {
+        let { id, tags, finish, currentWinner } = req.body;
+        let response = controllers.notifyEndOfBidToBuyers(id, tags, finish, currentWinner);
+        res.send(response);
+    });
+
+    app.post('/notify/bids/new', function (req, res) {
+        let { id, tags, } = req.body;
+        let response = controllers.notifyNewBidToBuyers(id, tags).catch(console.log);
+        res.send(response);
+    });
 
     ////////////////////////////////////////////
     /////////////////// PING ///////////////////

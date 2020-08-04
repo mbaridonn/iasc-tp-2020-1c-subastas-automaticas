@@ -29,15 +29,21 @@ export const addNewBid = async (mainNodes: String[], bid: any) => {
 export const cancelBid = async (mainNodes: String[], bid: any) => {
     const clusterToCloseBid = await findBidCluster(mainNodes, bid.id)
     await axios.post(`http://${mainNodes[clusterToCloseBid]}/bids/cancel`, {id: bid.id})
-    closeBid(mainNodes, bid)
 }
 
 export const closeBid = async (mainNodes: String[], bid: any) => {
     const clusterToCloseBid = await findBidCluster(mainNodes, bid.id)
-    const index = bidMap[clusterToCloseBid].indexOf(bid.id);
-    if(index > -1){
-        bidMap[clusterToCloseBid].splice(index, 1);
-    }
+    bidMap.forEach((cluster, i) => {
+        if (i == clusterToCloseBid) {
+            const index = cluster.indexOf(bid.id);
+            if (index > -1) {
+                bidMap[clusterToCloseBid].splice(index, 1);
+            }
+        } else {
+            const node = mainNodes[i]
+            axios.post(`http://${node}/notify/bids/close`, bid).catch(e => console.log(e));
+        }
+    })
 }
 
 export const updateBid = async (mainNodes: String[], bid: any) => {
@@ -49,6 +55,31 @@ export const updateBid = async (mainNodes: String[], bid: any) => {
     } catch (e) {
         return Promise.reject(e)
     }
+}
+
+export const notifyNewBid = async (mainNodes: String[], bid: any) => {
+    const clusterToCloseBid = await findBidCluster(mainNodes, bid.id)
+    bidMap.forEach((cluster, i) => {
+        if (i != clusterToCloseBid) {
+            const node = mainNodes[i]
+            axios.post(`http://${node}/notify/bids/new`, bid).catch(e => console.log(e));
+        }
+    })
+}
+
+export const notifyCancelBid = async (mainNodes: String[], bid: any) => {
+    const clusterToCloseBid = await findBidCluster(mainNodes, bid.id)
+    bidMap.forEach((cluster, i) => {
+        if (i == clusterToCloseBid) {
+            const index = cluster.indexOf(bid.id);
+            if (index > -1) {
+                bidMap[clusterToCloseBid].splice(index, 1);
+            }
+        } else {
+            const node = mainNodes[i]
+            axios.post(`http://${node}/notify/bids/cancel`, bid).catch(e => console.log(e));
+        }
+    })
 }
 
 export const addNewBidOffer = async (mainNodes: String[], offer: any) => {

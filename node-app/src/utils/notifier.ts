@@ -60,8 +60,8 @@ export class BidNotifier extends Notifier {
         return this.notifyTo(this._otherContainers, 'bids/close', {"id": id});
     }
 
-    notifyBidToBuyers = async (bid: Bid, currentBuyers: Buyer[], message: String) => {
-        let buyersToNotify = currentBuyers.filter( buyer => bid._tags.some( tag => buyer.tags.includes(tag) ))
+    notifyBidToBuyers = async (tags: String[], currentBuyers: Buyer[], message: String) => {
+        let buyersToNotify = currentBuyers.filter( buyer => tags.some( tag => buyer.tags.includes(tag) ))
         let buyersIp = buyersToNotify.map(buyer => buyer._ip);
         console.log(message)
         let messageToSend = {
