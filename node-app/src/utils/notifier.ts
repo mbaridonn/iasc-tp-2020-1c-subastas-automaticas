@@ -18,9 +18,18 @@ export class Notifier {
 
     notifyTo = (destinations: String[], path: String, params: any) => {
         //TODO: Revisar alta disponibilidad de containers.
+        let timeout = new Promise((resolve, reject) => {
+            const ms = 30000
+            let id = setTimeout(() => {
+                clearTimeout(id);
+                reject('Timed out in '+ ms + 'ms.')
+            }, ms)
+        })
+
         let response = Promise.all(destinations.map(destination => {
             return this.sentNotification(`http://${destination}/${path}`, params);
         }))
+        Promise.race([response,timeout])
         .then(respone => {
             return createJsonResponse('Notification success!', 200)})
         .catch(error => {
