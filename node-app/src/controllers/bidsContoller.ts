@@ -122,6 +122,11 @@ export const closeBid=(id: string)=>{
     bidsList = bidsList.filter(bid => bid._id != id);
 }
 
+export const cancelBid=(id: string)=>{
+  closeBid(id);
+  notifier.notifyBidToBuyers(findBid(id), getCurrentBuyers(), `La subasta ${id} fue cancelada. No hay ganadores.`);
+}
+
 export const updateBidMainNode = (node: String) => {
   mainNode = node;
 }
@@ -137,4 +142,10 @@ export const startAllBids = async () => {
          })
         .catch(err => { err })
     })
+}
+
+export const findBid = (id: String) => {
+  return bidsList.find((b: Bid) => {
+    return b._id == id
+});
 }

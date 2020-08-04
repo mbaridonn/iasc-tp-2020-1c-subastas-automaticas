@@ -44,6 +44,12 @@ export const register = (app: express.Application) => {
         res.send(createJsonResponse(`Se cerro correctamente`, 200));
     });
 
+    app.post('/bids/cancel', function (req, res) {
+      let {id} = req.body
+      controllers.cancelBid(id)
+      res.send(createJsonResponse(`Se cancelo correctamente`, 200));
+  });
+
     app.post('/new/main', async function (req, res) {
         await controllers.startAllBids()
         res.send(createJsonResponse(`Se iniciaron los bids correctamente`, 200));
