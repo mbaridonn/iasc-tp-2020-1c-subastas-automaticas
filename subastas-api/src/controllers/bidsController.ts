@@ -17,12 +17,12 @@ export const addNewBid = async (mainNodes: String[], bid: any) => {
     bidId++;
     const bidIdString = `${uniqueHostname}-${bidId}`
     addToBidMap(bidIdString, clusterToAddBid);
-    axios.post(`http://${nodeToAddBid}/bids/new`, { id: bidIdString, ...bid})
-    .then(respose => {
-        return "Se agrego el bid correctamente."
+    return await axios.post(`http://${nodeToAddBid}/bids/new`, { id: bidIdString, ...bid})
+    .then(response => {
+        return {message: "Se agrego el bid correctamente.", bid: response.data.body}
     })
     .catch(err => {
-        return "Fallo al agregar BidPam"+err.message
+        return {message: "Fallo al agregar BidPam"+err.message}
     });
 }
 

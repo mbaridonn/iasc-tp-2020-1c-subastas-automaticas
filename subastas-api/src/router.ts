@@ -25,10 +25,11 @@ export const register = (app: express.Application, mainNodes: String[]) => {
   app.post('/bids/new', async function (req, res) {
     try {
       let bid = req.body;
-      await controllers.addNewBid(mainNodes, bid);
-      res.send("Subasta agregada!");
+      let resp = await controllers.addNewBid(mainNodes, bid);
+      res.send(resp);
 
     } catch (error) {
+      console.log("Error agregando la subasta", error)
       res.status(400);
       res.send("Error agregando la subasta");
     }
