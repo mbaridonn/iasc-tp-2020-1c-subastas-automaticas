@@ -25,11 +25,12 @@ export const addNewBid = async (mainNodes: String[], bid: any) => {
     });
 }
 
-export const closeBid = async (mainNodes: String[], bid: any) => {
+export const cancelBid = async (mainNodes: String[], bid: any) => {
     const clusterToCloseBid = await findBidCluster(mainNodes, bid.id)
     const index = bidMap[clusterToCloseBid].indexOf(bid.id);
     if(index > -1){
         bidMap[clusterToCloseBid].splice(index, 1);
+        await axios.post(`http://${mainNodes[clusterToCloseBid]}/bids/cancel`, {id: bid.id})
     }
 }
 
