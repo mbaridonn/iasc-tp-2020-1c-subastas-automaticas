@@ -9,7 +9,7 @@ const port: number = 3000;
 app.use(bodyParser.json());
 
 app.listen(port, function () {
-    console.log(`Cliente started at http://localhost:${port}`);
+    console.log(`Cliente Rick Harrison started at http://localhost:${port}`);
 });
 
 const main = async () => {
@@ -25,16 +25,13 @@ const main = async () => {
     };
 
     let buyer = {
-        name: 'Rick',
-        ip: 'cliente:3000',
+        name: 'Rick Harrison',
+        ip: 'cliente-rick:3000',
         tags: ['books']
     };
 
     console.log(`${buyer.name} se registra en el sistema`);
     await axios.post(`${api}/buyers/new`, buyer);
-
-    console.log(`${buyer.name} postea una bid`);
-    await axios.post(`${api}/bids/new/`, bid);
 
     setTimeout(async () => {
         let bids = await axios.get(`${api}/bids`);
@@ -45,7 +42,7 @@ const main = async () => {
     setTimeout(async () => {
         let bidOffer = {
             id: bidIdToOffer,
-            newPrice: 12345,
+            newPrice: 1000,
             buyerIp: "cliente:3000"
         }
         console.log(`${buyer.name} hace una oferta a la bid de ID:${bidOffer.id} con un nuevo precio de ${bidOffer.newPrice} rupias`);
@@ -56,11 +53,11 @@ const main = async () => {
 
 app.post('/execute', async (req, res) => {
     await main();
-    res.send("Cliente ejecutado");
+    res.send("Cliente Rick Harrison ejecutado");
 })
 
 app.post('/offerNotification', async (req, res) => {
     let message = req.body.message;
     console.log(message);
-    res.send("La oferta fue notificada al cliente");
+    res.send("La oferta fue notificada al cliente Rick Harrison");
 })

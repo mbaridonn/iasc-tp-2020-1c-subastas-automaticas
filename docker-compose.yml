@@ -2,63 +2,48 @@ version: '3'
 
 services:
 
-#CLIENTE
-    cliente-1:
+#CLIENTE RICK
+    cliente-rick:
       build:
           dockerfile: Dockerfile
-          context: ./cliente
-      container_name: 'cliente-1'
+          context: ./cliente-rick
+      container_name: 'cliente-rick'
       restart: always
       volumes:
         - /app/node_modules
-        - ./cliente:/app
+        - ./cliente-rick:/app
       ports:
         - "8081:3000"
       networks: 
         - app-node-net
 
-#CLIENTE 2
-    cliente-2:
+#CLIENTE COREY
+    cliente-corey:
       build:
           dockerfile: Dockerfile
-          context: ./cliente
-      container_name: 'cliente-2'
+          context: ./cliente-corey
+      container_name: 'cliente-corey'
       restart: always
       volumes:
         - /app/node_modules
-        - ./cliente:/app
+        - ./cliente-corey:/app
       ports:
         - "8082:3000"
       networks: 
         - app-node-net  
         
-#CLIENTE 3
-    cliente-3:
-      build:
-          dockerfile: Dockerfile
-          context: ./cliente
-      container_name: 'cliente-3'
-      restart: always
-      volumes:
-        - /app/node_modules
-        - ./cliente:/app
-      ports:
-        - "8083:3000"
-      networks: 
-        - app-node-net
-
-#BUYER 3
+#VENDEDOR
     vendedor:
       build:
           dockerfile: Dockerfile
-          context: ./cliente
+          context: ./vendedor
       container_name: 'vendedor'
       restart: always
       volumes:
         - /app/node_modules
-        - ./cliente:/app
+        - ./vendedor:/app
       ports:
-        - "8084:3000"
+        - "8083:3000"
       networks: 
         - app-node-net
 

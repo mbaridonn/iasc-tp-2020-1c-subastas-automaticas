@@ -35,7 +35,7 @@ export const addNewBid = async (id: string, basePrice: number, hours: number, ta
 
 export const processNewOffer = async (bidId:string, newOffer: number, buyerIp: String) => {
     let bid = getBidById(bidId);
-    let processedBid = await bid.processOffer(buyerIp, newOffer);
+    let processedBid = bid.processOffer(buyerIp, newOffer);
     if(processedBid.success){
         let currentBuyers = getCurrentBuyers();
         await notifier.notifyBidToBuyers(bid, currentBuyers, processedBid.message)
