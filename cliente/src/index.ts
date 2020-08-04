@@ -13,9 +13,8 @@ app.listen(port, function () {
 });
 
 const main = async () => {
-    console.log("Cliente iniciado!");
-
     let api = 'http://subastas-api:3000';
+    let bidIdToOffer = "";
 
     let bid = {
         basePrice: 500,
@@ -31,21 +30,27 @@ const main = async () => {
         tags: ['books']
     };
 
-    console.log("Me registro en el sistema");
+    console.log(`${buyer.name} se registra en el sistema`);
     await axios.post(`${api}/buyers/new`, buyer);
 
-    console.log("Posteo una bid");
+    console.log(`${buyer.name} postea una bid`);
     await axios.post(`${api}/bids/new/`, bid);
 
     setTimeout(async () => {
-        console.log("Hago una oferta");
+        let bids = await axios.get(`${api}/bids`);
+        let firstBid = bids.data[0];
+        bidIdToOffer = firstBid._id;
+    }, 5000);
+
+    setTimeout(async () => {
         let bidOffer = {
-            bidId: 1,
-            newPrice: 1000,
+            id: bidIdToOffer,
+            newPrice: 12345,
             buyerIp: "cliente:3000"
         }
+        console.log(`${buyer.name} hace una oferta a la bid de ID:${bidOffer.id} con un nuevo precio de ${bidOffer.newPrice} rupias`);
         await axios.post(`${api}/bids/offer`, bidOffer);
-    }, 5000); //espero un poco porque sino rompe. La API retorna una respuesta y el nodo no termino de procesar
+    }, 10000);
 
 }
 

@@ -26,7 +26,7 @@ export const addNewBid = async (id: string, basePrice: number, hours: number, ta
         
         await notifyToContainers(bid);
         let currentBuyers = getCurrentBuyers();
-        await notifier.notifyBidToBuyers(bid, currentBuyers, `Esta subasta podria interesarle: ${bid._id}`)   
+        await notifier.notifyBidToBuyers(bid, currentBuyers, `Se creo una subasta con ID: ${bid._id}. Podria interesarle`)
     }
     bidsList.push(bid);
     return createJsonResponse(bid, 200); 
