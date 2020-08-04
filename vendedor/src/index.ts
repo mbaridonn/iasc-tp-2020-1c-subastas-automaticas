@@ -83,7 +83,7 @@ const main3 = async () => {
         setTimeout(async () => {
                 await axios.post(`${api}/bids/cancel`, {id})
                 .catch(err => {console.log("Fallo al cancelar la subasta", err)});
-            }, 15000);
+            }, 25000);
     })
     .catch(err => {
         console.log("Vendedor fallo al crear una bid")

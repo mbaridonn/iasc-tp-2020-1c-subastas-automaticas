@@ -68,8 +68,9 @@ const ofertaViolento = () =>{
             sendOfferRequest(bid)
         })
     );
-        
-        console.log("No lo se Rick, parece aprobado!")
+        console.log("=====================================")
+        console.log("|| No lo se Rick, parece aprobado! ||")
+        console.log("=====================================")
     }, 16000);
 }
 

@@ -73,6 +73,9 @@ export class BidNotifier extends Notifier {
         let buyersToNotify = currentBuyers.filter( buyer => tags.some( tag => buyer.tags.includes(tag) ))
         let buyersIp = buyersToNotify.map(buyer => buyer._ip);
         // console.log(message)
+        console.log("-------------------------------------------")
+        console.log("-------------------------------------------")
+        console.log("-------------------------------------------")
         let messageToSend = {
             message: message
         };

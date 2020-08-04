@@ -33,14 +33,19 @@ export class Bid {
             this._currentWinner = buyerIp
             this._basePrice = newOffer
             return {success: true, 
-                    message: `El nuevo precio de la subasta ${this._id} es de: ${this._basePrice} rupias`};
+                    message: `El nuevo precio de la subasta ${this._id} es de: ${this._basePrice} rupias, el actual ganador es ${this._currentWinner}`};
         }
         return {success: false,
                 message: `Asegurese que el valor de la oferta sea mayor que: ${this._basePrice} rupias`};;
     };
 
+
     restart = (): Promise<Bid> => {
+        console.log("============================================")
         console.log("Reiniciando subasta: ",this._id, "previamente iniciada a las", this._started.toLocaleString());
+        console.log("============================================")
+        console.log("-------------------------------------------")
+        console.log("-------------------------------------------")
         this._finish = new Date(this._started);
         this._finish.setSeconds( this._finish.getSeconds() + 5 + this._hours);
         return this.initTimeOutBid()
@@ -50,16 +55,24 @@ export class Bid {
        this._started = new Date();
        this._finish = new Date();
        this._finish.setSeconds( this._finish.getSeconds() + this._hours);
-       
+       console.log("============================================")
        console.log("Iniciando subasta: ",this._id, "a las", this._started.toLocaleString());
+       console.log("============================================")
+       console.log("-------------------------------------------")
+       console.log("-------------------------------------------")
        return this.initTimeOutBid()
+
     };
 
     private initTimeOutBid = (): Promise<Bid> => {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 if (findBid(this._id)) {
+                    console.log("=====================================")
                     console.log("Finalizando subasta: ", this._id, "a las", this._finish.toLocaleString());
+                    console.log("=====================================")
+                    console.log("-------------------------------------------")
+                    console.log("-------------------------------------------")
                     axios.post(`http://${API_URL}/bids/close`, {
                         id: this._id,
                         tags: this._tags,
