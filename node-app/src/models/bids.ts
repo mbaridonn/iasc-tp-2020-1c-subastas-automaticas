@@ -1,6 +1,7 @@
 import { Buyer } from "./buyers";
 import controllers from '../controllers';
 import axios from 'axios'
+import {findBid} from "../controllers/bidsContoller";
 
 const API_URL = 'subastas-api:3000'
 
@@ -38,26 +39,26 @@ export class Bid {
                 message: `Asegurese que el valor de la oferta sea mayor que: ${this._basePrice} rupias`};;
     };
 
-    restart = (bidsList:Bid[]): Promise<Bid> => {
+    restart = (): Promise<Bid> => {
         console.log("Reiniciando subasta: ",this._id, "previamente iniciada a las", this._started.toLocaleString());
         this._finish = new Date(this._started);
         this._finish.setSeconds( this._finish.getSeconds() + 5 + this._hours);
-        return this.initTimeOutBid(bidsList)
+        return this.initTimeOutBid()
     }
 
-    start = (bidsList:Bid[]): Promise<Bid> => {
+    start = (): Promise<Bid> => {
        this._started = new Date();
        this._finish = new Date();
        this._finish.setSeconds( this._finish.getSeconds() + this._hours);
        
        console.log("Iniciando subasta: ",this._id, "a las", this._started.toLocaleString());
-       return this.initTimeOutBid(bidsList)
+       return this.initTimeOutBid()
     };
 
-    private initTimeOutBid = (bidsList: Bid[]): Promise<Bid> => {
+    private initTimeOutBid = (): Promise<Bid> => {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                if (bidsList.includes(this)) {
+                if (findBid(this._id)) {
                     console.log("Finalizando subasta: ", this._id, "a las", this._finish.toLocaleString());
                     axios.post(`http://${API_URL}/bids/close`, {
                         id: this._id,

@@ -14,7 +14,7 @@ const API_URL = 'subastas-api:3000'
 export const addNewBid = async (id: string, basePrice: number, hours: number, tags: String[], notifyFlag: boolean = true) => {
     let bid = new Bid(id, basePrice, hours, tags);
     if(notifyFlag){
-        bid.start(bidsList) //Notify end of bid
+        bid.start() //Notify end of bid
         .then(response => {
             return notifyEndOfBid(response).then(resp => {
                 closeBid(response._id);
@@ -158,7 +158,7 @@ export const updateBidMainNode = (node: String) => {
 
 export const startAllBids = async () => {
     bidsList.forEach( bid => {
-        bid.restart(bidsList)
+        bid.restart()
         .then(response => {
             return notifyEndOfBid(response).then(resp => {
                 closeBid(response._id);
