@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 router.register(app);
 
 const initScheduler = function () {
-  const seconds = 1
+  const seconds = 10
   const interval = seconds * 1000
   setInterval(initializeBidsFromOtherNode, interval)
   setInterval(initializeBuyersFromOtherNode, interval)
@@ -31,8 +31,11 @@ const initNetworkInfo =  async function() {
   }
 }
 
+
 initNetworkInfo()
 initScheduler()
+initializeBidsFromOtherNode()
+initializeBuyersFromOtherNode()
 
 app.listen(port, function () {
     console.log(`Server started at http://localhost:${port}`);

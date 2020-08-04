@@ -75,7 +75,7 @@ const addToBidMap = async function (bidId: string, clusterToAddBid: number) {
 export const updateBidMap = async (mainNodes: String[]) => {
     try {
         let bidsByNodes = await getFromMainNodesByNodes(mainNodes, "bids")
-        bidMap = bidsByNodes.map((l: { _id: number; }[]) => l.map(bid => bid._id))
+        bidMap = bidsByNodes.map((l: { _id: String; }[]) => l.map(bid => bid._id))
     } catch (e) {
         return Promise.reject(e)
     }
