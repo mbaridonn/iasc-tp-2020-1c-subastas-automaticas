@@ -119,7 +119,7 @@ export const initializeBidsFromOtherNode =  async () => {
     }
   }
   catch{
-    console.error('No se pudieron levantar las bids')
+    console.error('Intentando levantar las bids..')
   }
 };
 
@@ -128,8 +128,6 @@ export const closeBid=(id: string)=>{
 }
 
 export const cancelBid= async (id: string)=>{
-    console.log("FIND", id)
-    console.log("LIST ANTES", bidsList)
     notifier.notifyBidToBuyers(findBid(id), getCurrentBuyers(), `La subasta ${id} fue cancelada. No hay ganadores.`)
     .then(resp => {closeBid(id)})
     .catch(err => { console.log("Fallo al notificar a lo buyers", err)})
@@ -154,7 +152,6 @@ export const startAllBids = async () => {
 }
 
 export const findBid = (id: String) => {
-    console.log("LIST", bidsList)
   return bidsList.find((b: Bid) => {
     return b._id == id
 });

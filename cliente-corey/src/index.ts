@@ -39,6 +39,7 @@ const main = async () => {
         }
         console.log(`${buyer.name} hace una oferta a la bid de ID:${bidOffer.id} con un nuevo precio de ${bidOffer.newPrice} rupias`);
         await axios.post(`${api}/bids/offer`, bidOffer);
+        console.log("No lo se Rick, parece aprobado!")
     }, 15000);
 
 }

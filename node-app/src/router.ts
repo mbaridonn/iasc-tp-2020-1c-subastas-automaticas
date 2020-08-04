@@ -44,9 +44,9 @@ export const register = (app: express.Application) => {
         res.send(createJsonResponse(`Se cerro correctamente`, 200));
     });
 
-    app.post('/bids/cancel', function (req, res) {
+    app.post('/bids/cancel', async function (req, res) {
       let {id} = req.body
-      controllers.cancelBid(id)
+      await controllers.cancelBid(id)
       res.send(createJsonResponse(`Se cancelo correctamente`, 200));
   });
 

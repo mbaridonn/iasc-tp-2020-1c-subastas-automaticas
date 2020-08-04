@@ -61,7 +61,7 @@ export const register = (app: express.Application, mainNodes: String[]) => {
   app.post('/bids/close', async function (req, res) {
     try{
       let bid = req.body;
-      await controllers.cancelBid(mainNodes,bid);
+      await controllers.closeBid(mainNodes,bid);
       res.send('Subasta terminada');
 
     } catch(error){

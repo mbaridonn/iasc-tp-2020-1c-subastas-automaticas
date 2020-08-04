@@ -31,3 +31,7 @@ app.post('/execute', async (req, res) => {
     await main();
     res.send("Vendedor ejecutado");
 })
+
+app.post('/finish', async (req, res) => {
+    res.send("No era lo que esperaba, pero me voy aprobado..");
+})
