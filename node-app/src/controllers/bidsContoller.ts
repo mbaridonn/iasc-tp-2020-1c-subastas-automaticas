@@ -37,6 +37,7 @@ export const processNewOffer = async (bidId:string, newOffer: number, buyerIp: S
     let bid = getBidById(bidId);
     let processedBid = bid.processOffer(buyerIp, newOffer);
     if(processedBid.success){
+        await notifyToContainers(bid);
         let currentBuyers = getCurrentBuyers();
         await notifier.notifyBidToBuyers(bid, currentBuyers, processedBid.message)
         return createJsonResponse(processedBid.message, 200);
