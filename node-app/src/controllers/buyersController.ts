@@ -50,7 +50,7 @@ export const initializeBuyersFromOtherNode =  async () => { // es igual al de bi
     }
   }
   catch{
-    console.error('No se pudieron levantar los buyers')
+    // console.error('No se pudieron levantar los buyers')
   }
 };
 
